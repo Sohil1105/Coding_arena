@@ -1,0 +1,72 @@
+# Docker Compose for Coding Arena
+services:
+  # Node.js/Express backend
+  backend:
+    build:
+      context: ./server
+      dockerfile: DockerFile
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - COMPILER_URL=http://compiler:8000
+    depends_on:
+      - compiler
+    command: ["node", "server.js"]
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # React frontend
+  frontend:
+    build:
+      context: ./client
+      dockerfile: DockerFile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+      - seeder
+    env_file:
+      - .env
+    environment:
+      - REACT_APP_API_URL=http://backend:5000
+      - PORT=3000
+    command: sh -c "npm install && npm start"
+    networks:
+      - app-network
+
+  compiler:
+    build:
+      context: ./temp-compiler/backend
+      dockerfile: DockerFile
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+  seeder:
+    build:
+      context: ./server
+      dockerfile: DockerFile
+    depends_on:
+      - backend
+    env_file:
+      - .env
+    command: >
+      sh -c "npm run seed-db"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

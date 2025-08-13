@@ -1,0 +1,25 @@
+/* ====== Global Wrapper Layout ====== */
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #131a2a;
+  color: #fff;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.main-container {
+  padding: 0;
+}

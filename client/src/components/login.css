@@ -1,0 +1,130 @@
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+}
+
+.login-card {
+    background: rgba(35,47,62,0.94);
+    padding: 2rem;
+    border-radius: 14px;
+    border: 1px solid #23304e;
+    box-shadow: 0 4px 18px rgba(33,203,255,0.07);
+    width: 450px;
+    text-align: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: #fff;
+}
+
+.login-title {
+    text-align: center;
+    color: #21cbff;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.login-subtitle {
+    text-align: center;
+    color: #ccc;
+    margin-bottom: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #ccc;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #23304e;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: rgba(19,26,42,0.9);
+    color: white;
+}
+
+.form-group input:focus {
+    border-color: #21cbff;
+}
+
+.login-btn {
+    background: linear-gradient(90deg, #1967d2, #21cbff);
+    border: none;
+    padding: 0.7rem;
+    border-radius: 8px;
+    font-weight: 600;
+    color: #fff;
+    width: 100%;
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    filter: brightness(1.1);
+}
+
+.login-footer {
+    margin-top: 1rem;
+    color: #ccc;
+}
+
+.login-footer a {
+    color: #21cbff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 2px;
+}
+
+.login-footer a:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #21cbff;
+    transform-origin: bottom right;
+    transition: transform 0.25s ease-out;
+}
+
+.login-footer a:hover {
+    text-decoration: none;
+}
+
+.login-footer a:hover:after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
+
+.password-input-container {
+    position: relative;
+    width: 100%;
+}
+
+.password-input-container input {
+    padding-right: 2.5rem; /* Make space for the icon */
+}
+
+.password-toggle-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #ccc; /* Adjust color as needed */
+    font-size: 1.2rem;
+}

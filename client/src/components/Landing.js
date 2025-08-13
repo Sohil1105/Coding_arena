@@ -1,0 +1,45 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
+import "./Landing.css";
+
+const ArenaX = () => {
+  const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      toast.success("Already logged in!");
+      setTimeout(() => {
+        navigate("/problems");
+      }, 1000);
+    } else {
+      navigate("/login");
+    }
+  };
+
+  const handleExploreProblems = () => {
+    navigate("/problems");
+  };
+
+  return (
+    <div className="landing-container">
+      <Toaster />
+      {/* Hero */}
+      <div className="hero-section">
+        <h1 className="hero-title">
+          Unleash Your Coding Skills with <span>Coding Arena</span>
+        </h1>
+        <p className="hero-subtitle">
+          Solve challenges, contribute problems, and climb the leaderboard in an interactive Online Judge platform.
+        </p>
+        <div className="hero-buttons">
+          <button onClick={handleExploreProblems} className="custom-button">Explore Problems</button>
+          <button onClick={handleGetStarted} className="custom-button secondary-btn">Get Started</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ArenaX;

@@ -1,0 +1,86 @@
+.landing-container {
+  color: #ffffff;
+  font-family: sans-serif;
+  overflow: hidden;
+}
+
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 60px); /* Subtract navbar height */
+  text-align: center;
+  padding: 0 2rem;
+  animation: fadeInSlideUp 1s ease-out forwards;
+}
+
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin: 0;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.hero-title span {
+  display: block;
+  color: var(--primary-color);
+  text-shadow: 0 0 15px rgba(100, 255, 218, 0.7);
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  margin: 1.5rem 0 2.5rem;
+  color: #bfcad6;
+  line-height: 1.6;
+  animation: fadeInSlideUp 1s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.custom-button {
+  padding: 0.8rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid var(--primary-color);
+  background-color: transparent;
+  color: var(--primary-color);
+  animation: fadeInSlideUp 1s ease-out 0.6s forwards;
+  opacity: 0;
+}
+
+.custom-button:hover {
+  background-color: var(--primary-color);
+  color: #0f1725;
+  transform: translateY(-2px);
+}
+
+.custom-button.secondary-btn {
+  background-color: var(--primary-color);
+  color: #0f1725;
+}
+
+.custom-button.secondary-btn:hover {
+  background-color: transparent;
+  color: var(--primary-color);
+}

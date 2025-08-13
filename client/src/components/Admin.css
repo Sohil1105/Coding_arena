@@ -1,0 +1,73 @@
+.admin-page {
+    padding: 2rem;
+    min-height: 100vh;
+}
+
+.admin-page h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #00BFFF;
+    font-size: 2.5rem;
+}
+
+.problems-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.admin-problem-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: #1c2a3a;
+}
+
+.admin-problem-item:hover {
+    transform: translateY(-5px);
+}
+
+.problem-item span {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.admin-actions .edit-btn,
+.admin-actions .delete-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.2s ease;
+}
+
+.admin-actions .edit-btn {
+    background-color: #007bff;
+}
+
+.admin-actions .edit-btn:hover {
+    background-color: #0056b3;
+}
+
+.admin-actions .delete-btn {
+    background-color: #dc3545;
+}
+
+.admin-actions .delete-btn:hover {
+    background-color: #c82333;
+}

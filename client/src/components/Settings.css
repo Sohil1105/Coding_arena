@@ -1,0 +1,25 @@
+.settings-container {
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    padding: 2rem 1rem 3rem;
+    color: #fff;
+    background-color: #1a202c;
+}
+
+.settings-card {
+    max-width: 800px;
+    margin: auto;
+    background: #2d3748;
+    border-radius: 14px;
+    box-shadow: 0 6px 28px rgba(33, 203, 255, 0.08);
+    border: 1px solid #4a5568;
+    padding: 2rem;
+    text-align: center;
+}
+
+.settings-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: #38b2ac;
+}

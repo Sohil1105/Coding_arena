@@ -1,0 +1,286 @@
+/* ===== Problem Detail Cyber Style ===== */
+
+:root {
+  --bg-dark: #0f2027;
+  --bg-surface: rgba(24, 32, 45, 0.94);
+  --text-main: #ecf6ff;
+}
+
+.problem-detail-page {
+  display: flex;
+  height: calc(100vh - 60px);
+  background: radial-gradient(ellipse at center, var(--bg-surface) 0%, var(--bg-dark) 100%);
+  color: var(--text-main);
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ===== LEFT PROBLEM PANEL ===== */
+.problem-panel {
+  flex: 1;
+  padding: 20px 26px;
+  overflow-y: auto;
+  background: var(--bg-surface);
+  border-right: 1px solid rgba(33, 203, 255, 0.15);
+  backdrop-filter: blur(5px);
+}
+
+/* ===== HEADER ===== */
+.problem-header {
+  margin-bottom: 20px;
+}
+
+.problem-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #00e6ff, #38b2ac);
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: 0 2px 12px #0ff2ff55;
+  margin-bottom: 8px;
+}
+
+.problem-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* Difficulty badges */
+.difficulty-badge {
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.06);
+}
+
+.difficulty-badge.easy {
+  background: #4caf50;
+  color: #fff;
+}
+.difficulty-badge.medium {
+  background: #ff9800;
+  color: #fff;
+}
+.difficulty-badge.hard {
+  background: #f44336;
+  color: #fff;
+}
+
+/* Tags */
+.tags {
+  display: flex;
+  gap: 6px;
+}
+.tag {
+  background: rgba(40, 160, 180, 0.08);
+  color: #b5f6ff;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 12px;
+  border: 1px solid rgba(33, 203, 255, 0.12);
+}
+
+/* ====== TABS ====== */
+.problem-tabs {
+  display: flex;
+  border-bottom: 1px solid #333;
+  margin-bottom: 16px;
+}
+.tab-button {
+  background: none;
+  border: none;
+  color: #bfcad6;
+  padding: 0.7rem 1.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0.4rem 0 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 2px solid transparent;
+}
+.tab-button:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+.tab-button.active {
+  color: #00e6ff;
+  border-bottom: 2px solid #00e6ff;
+  text-shadow: 0 0 8px rgba(0, 230, 255, 0.6);
+}
+
+/* Problem content */
+.problem-content {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #e2f8ff;
+}
+.problem-statement {
+  margin-bottom: 1.5rem;
+}
+
+/* Shared info card style for Inputs, Outputs, Examples */
+.examples-section {
+  background: rgba(33, 203, 255, 0.05);
+  border: 1px solid rgba(33, 203, 255, 0.12);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 1rem;
+}
+.examples-section h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+/* Variants for Input/Output formats */
+.input-format-section h3 {
+  color: #ffdd57;
+  text-shadow: 0 0 6px rgba(255, 221, 87, 0.4);
+}
+.output-format-section h3 {
+  color: #ff6bcb;
+  text-shadow: 0 0 6px rgba(255, 107, 203, 0.4);
+}
+
+.example {
+  margin-bottom: 12px;
+}
+.example h4 {
+  color: #40f9fe;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+/* ===== RIGHT CODE EDITOR PANEL ===== */
+.editor-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: rgba(19, 26, 42, 0.96);
+}
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: rgba(28, 35, 52, 0.92);
+  border-bottom: 1px solid rgba(33, 203, 255, 0.15);
+}
+.editor-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #00e6ff;
+}
+.language-selector select {
+  padding: 4px 8px;
+  background: #1e1e1e;
+  color: #bfcad6;
+  border: 1px solid #333;
+  border-radius: 5px;
+}
+.editor-container {
+  padding: 0;
+  flex-grow: 1;
+}
+
+/* ===== RESULTS PANEL ===== */
+.results-panel {
+  padding: 14px 18px;
+  background: rgba(26, 35, 55, 0.92);
+  border-top: 1px solid rgba(33, 203, 255, 0.12);
+}
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.submit-button,
+.ai-review-button {
+  flex: 1;
+  background: linear-gradient(90deg, #00e6ff 0%, #38b2ac 100%);
+  color: #191c24;
+  border: none;
+  padding: 0.55rem 0.95rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.25s, transform 0.15s, box-shadow 0.2s;
+}
+.submit-button:hover,
+.ai-review-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px #00e6ff80;
+}
+.submit-button:disabled,
+.ai-review-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Output blocks */
+.output-section {
+  margin-top: 12px;
+  background: rgba(19, 26, 42, 0.97);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1.2px solid rgba(33, 203, 255, 0.1);
+  color: #bfcad6;
+  font-size: 0.93rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.output-section h3 {
+  color: #00e6ff;
+  margin-bottom: 0.5rem;
+}
+.output-section pre {
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.ai-review-button {
+  background: linear-gradient(90deg, #21cbff 0%, #00e676 100%);
+  color: #121820;
+}
+
+/* ===== LOGIN NOTICE ===== */
+.login-notice {
+  background: rgba(244, 67, 54, 0.08);
+  color: #f44336;
+  font-weight: 700;
+  border-radius: 7px;
+  padding: 0.7rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 1.01rem;
+  transition: box-shadow 300ms;
+}
+.login-notice.highlight-notice {
+  box-shadow: 0 0 0 3px #f44336;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .problem-detail-page {
+    flex-direction: column;
+  }
+  .problem-panel {
+    border-right: none;
+    border-bottom: 1px solid rgba(33, 203, 255, 0.1);
+  }
+}
+@media (max-width: 600px) {
+  .problem-title {
+    font-size: 1.1rem;
+  }
+  .tab-button {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.88rem;
+  }
+  .button-group {
+    flex-direction: column;
+  }
+}

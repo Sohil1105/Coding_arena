@@ -1,0 +1,80 @@
+/* ====== Modern Cyber Blue - Submissions Page ====== */
+
+.submissions-container {
+  min-height: 100vh;
+  background: linear-gradient(120deg, #131a2a 60%, #1967d2 120%);
+  font-family: 'Inter', sans-serif;
+  padding: 2rem 1rem 3rem 1rem;
+  color: #fff;
+}
+
+.submissions-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #21cbff;
+  margin-bottom: 2rem;
+  letter-spacing: 1px;
+}
+
+/* Submission Cards */
+.submission-card {
+  background: rgba(35, 47, 62, 0.94);
+  border: 1px solid #23304e;
+  border-radius: 10px;
+  padding: 1.2rem 1.4rem;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 4px 18px rgba(33, 203, 255, 0.06);
+  transition: box-shadow 0.18s, transform 0.14s;
+}
+
+.submission-card:hover {
+  box-shadow: 0 8px 28px rgba(33, 203, 255, 0.09);
+  transform: translateY(-2px);
+}
+
+.submission-problem {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  color: #21cbff;
+}
+
+.submission-language {
+  font-size: 0.9rem;
+  color: #bfcad6;
+  margin-bottom: 0.4rem;
+}
+
+.submission-output {
+  font-size: 0.92rem;
+  color: #fff;
+  background: rgba(19, 26, 42, 0.9);
+  padding: 0.6rem 0.8rem;
+  border-radius: 7px;
+  border: 1px solid #23304e;
+  overflow-x: auto;
+}
+
+.submission-time {
+  font-size: 0.85rem;
+  color: #8492a6;
+  margin-top: 0.5rem;
+}
+
+/* Empty or Loading State */
+.submissions-empty {
+  text-align: center;
+  font-size: 1rem;
+  color: #8492a6;
+  margin-top: 2rem;
+}
+
+@media (max-width: 600px) {
+  .submission-card {
+    padding: 0.9rem 0.8rem;
+  }
+  .submission-problem {
+    font-size: 1rem;
+  }
+}

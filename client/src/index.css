@@ -1,0 +1,23 @@
+/* ====== Root Styles ====== */
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --primary-color: #64ffda;
+  --accent-color: #00BFFF;
+  --bg-dark: #0b0d13;
+  --bg-surface: #1c2a3a;
+  --text-main: #ffffff;
+  --text-secondary: #bfcad6;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: radial-gradient(circle at center, #2c3e50 0%, #0b0d13 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}

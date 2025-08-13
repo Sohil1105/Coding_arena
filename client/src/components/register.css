@@ -1,0 +1,116 @@
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.register-card {
+    background: rgba(35,47,62,0.94);
+    padding: 2rem;
+    border-radius: 14px;
+    border: 1px solid #23304e;
+    box-shadow: 0 4px 18px rgba(33,203,255,0.07);
+    width: 450px;
+    text-align: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: #fff;
+}
+
+.register-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #21cbff;
+    margin-bottom: 0.5rem;
+}
+
+.register-subtitle {
+    font-size: 1.2rem;
+    color: #ccc;
+    margin-bottom: 1rem;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #ccc;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #23304e;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: rgba(19,26,42,0.9);
+    color: white;
+}
+
+.form-group input:focus {
+    border-color: #21cbff;
+}
+
+.register-btn {
+    width: 100%;
+    padding: 0.7rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #1967d2, #21cbff);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.register-btn:hover {
+    filter: brightness(1.1);
+}
+
+.login-link {
+    margin-top: 1rem;
+    color: #ccc;
+}
+
+.login-link a {
+    color: #21cbff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 2px;
+}
+
+.login-link a:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #21cbff;
+    transform-origin: bottom right;
+    transition: transform 0.25s ease-out;
+}
+
+.login-link a:hover {
+    text-decoration: none;
+}
+
+.login-link a:hover:after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
