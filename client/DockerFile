@@ -1,9 +1,18 @@
-FROM node:18
-WORKDIR /usr/src/app
-COPY package*.json ./
-RUN npm install
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
+# Stage 1: Build the React application
+FROM node:18-alpine as builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci --production
+
 COPY . .
-ENV PORT=3000
+RUN npm run build
+
+# Stage 2: Serve the application with Nginx
+FROM nginx:stable-alpine as production
+
+COPY --from=builder /app/build /usr/share/nginx/html
+
 EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["nginx", "-g", "daemon off;"]

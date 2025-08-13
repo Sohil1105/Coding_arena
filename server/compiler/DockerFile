@@ -1,9 +1,21 @@
-FROM node:18
-WORKDIR /usr/src/app
-COPY package*.json ./
-RUN npm install && \
-    apt-get update && \
-    apt-get install -y default-jdk g++ python3 gcc
+# Stage 1: Build dependencies
+FROM node:18-alpine as dependencies
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci --production
+
+# Stage 2: Runtime
+FROM node:18-alpine as production
+
+WORKDIR /app
+
+COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
+
+# Install necessary compilers and runtimes
+RUN apk add --no-cache default-jdk g++ python3 gcc
+
 EXPOSE 8000
 CMD ["node", "index.js"]

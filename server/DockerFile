@@ -1,7 +1,18 @@
-FROM node:18
-WORKDIR /usr/src/app
-COPY package*.json ./
-RUN npm install
+# Stage 1: Dependencies
+FROM node:18-alpine as dependencies
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci --production
+
+# Stage 2: Production
+FROM node:18-alpine as production
+
+WORKDIR /app
+
+COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
+
 EXPOSE 5000
 CMD ["node", "server.js"]

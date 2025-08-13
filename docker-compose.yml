@@ -4,7 +4,7 @@ services:
   backend:
     build:
       context: ./server
-      dockerfile: DockerFile
+      dockerfile: Dockerfile
     ports:
       - "5000:5000"
     env_file:
@@ -39,13 +39,13 @@ services:
     environment:
       - REACT_APP_API_URL=http://backend:5000
       - PORT=3000
-    command: sh -c "npm install && npm start"
+    command: ["nginx", "-g", "daemon off;"]
     networks:
       - app-network
 
   compiler:
     build:
-      context: ./temp-compiler/backend
+      context: ./server/compiler
       dockerfile: DockerFile
     ports:
       - "8000:8000"
@@ -57,7 +57,7 @@ services:
   seeder:
     build:
       context: ./server
-      dockerfile: DockerFile
+      dockerfile: Dockerfile
     depends_on:
       - backend
     env_file:
