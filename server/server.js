@@ -1,3 +1,5 @@
+require('dotenv').config({ path: './server/.env' });
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -8,7 +10,6 @@ const leaderboardRoutes = require('./leaderboard');
 const authRoutes = require('./auth');
 const aiRoutes = require('./ai');
 const seedAll = require('./seedAll');
-require('dotenv').config();
 
 const app = express();
 app.use(cors({
@@ -17,11 +18,7 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Default COMPILER_URL
-if (!process.env.COMPILER_URL) {
-    process.env.COMPILER_URL = 'http://localhost:8000';
-    console.log('COMPILER_URL not set, defaulting to http://localhost:8000');
-}
+// Environment configuration removed
 
 // Connect to MongoDB
 const connectDB = async () => {
@@ -70,15 +67,7 @@ app.get('/', (req, res) => {
     res.status(200).send('Backend API is running successfully.');
 });
 
-// Test compiler
-app.get('/test-compiler', async (req, res) => {
-    try {
-        const response = await require('axios').get(`${process.env.COMPILER_URL}/`);
-        res.json({ status: 'success', data: response.data });
-    } catch (err) {
-        res.status(500).json({ status: 'error', message: err.message });
-    }
-});
+// Test compiler endpoint removed
 
 // Health endpoint
 app.get('/health', (req, res) => {

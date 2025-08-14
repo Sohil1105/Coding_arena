@@ -60,48 +60,48 @@ const ProblemDetail = () => {
     setError(null);
     setSubmissionResult('Submitting your code... Please wait.');
 
-    try {
-      const res = await axios.post(`${API_BASE_URL}/api/submissions`, {
-        problemId: id,
-        code,
-        language,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-token': token,
-        },
-      });
-
-      if (res.data.success) {
-        const outputData = res.data.output;
-        if (outputData.startsWith('Accepted') || outputData.startsWith('Failed')) {
-          const lines = outputData.split('\n');
-          const summary = lines[0];
-          const details = JSON.parse(lines.slice(1).join('\n'));
-          let formattedOutput = `${summary}\n\nTest Case Results:\n`;
-          details.forEach((test, index) => {
-            formattedOutput += `\nTest Case ${index + 1}:\n`;
-            formattedOutput += `  Input: ${test.input}\n`;
-            formattedOutput += `  Expected Output: ${test.expectedOutput}\n`;
-            formattedOutput += `  Actual Output: ${test.actualOutput}\n`;
-            formattedOutput += `  Result: ${test.passed ? 'Passed' : 'Failed'}\n`;
-            if (test.error) {
-              formattedOutput += `  Error: ${test.actualOutput}\n`;
-            }
+        try {
+          const res = await axios.post(`${API_BASE_URL}/api/submissions`, {
+            problemId: id,
+            code,
+            language,
+          }, {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-auth-token': token,
+            },
           });
-          setSubmissionResult(formattedOutput);
-        } else {
-          setSubmissionResult(outputData);
+
+          if (res.data.success) {
+            const outputData = res.data.output;
+            const testResults = res.data.testResults || [];
+            
+            if (testResults.length > 0) {
+              let formattedOutput = `${outputData}\n\nTest Case Results:\n`;
+              testResults.forEach((test, index) => {
+                formattedOutput += `\nTest Case ${index + 1}:\n`;
+                formattedOutput += `  Input: ${test.input || 'N/A'}\n`;
+                formattedOutput += `  Expected Output: ${test.expectedOutput || 'N/A'}\n`;
+                formattedOutput += `  Actual Output: ${test.actualOutput || 'N/A'}\n`;
+                formattedOutput += `  Result: ${test.passed ? 'Passed' : 'Failed'}\n`;
+                if (test.error) {
+                  formattedOutput += `  Error: ${test.error || 'Unknown error'}\n`;
+                }
+              });
+              setSubmissionResult(formattedOutput);
+            } else {
+              setSubmissionResult(outputData || 'Code executed successfully');
+            }
+          } else {
+            setSubmissionResult(res.data.output || res.data.message || 'Submission failed');
+          }
+        } catch (err) {
+          setError('Error submitting code. Please try again.');
+          console.error('Error submitting code', err);
+          setSubmissionResult(`Error: ${err.response?.data?.message || err.message || 'Unknown error'}`);
+        } finally {
+          setIsSubmitting(false);
         }
-      } else {
-        setSubmissionResult(res.data.output);
-      }
-    } catch (err) {
-      setError('Error submitting code. Please try again.');
-      console.error('Error submitting code', err);
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   const handleAiReview = async () => {
