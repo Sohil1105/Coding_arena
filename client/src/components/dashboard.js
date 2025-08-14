@@ -52,8 +52,8 @@ const Dashboard = () => {
                         {error && <p className="error-message">{error}</p>}
                         {!error && problems.length === 0 && <p>No problems available.</p>}
                         {problems.map((problem) => (
-                            <div key={problem._id} className="dashboard-problem-item">
-                                <Link to={`/problem/${problem._id}`} className="problem-title-link">
+                            <div key={problem.id} className="dashboard-problem-item">
+                                <Link to={`/problem/${problem.id}`} className="problem-title-link">
                                     <span className="problem-title">{problem.title}</span>
                                 </Link>
                                 <span className={`problem-difficulty ${problem.difficulty.toLowerCase()}`}>{problem.difficulty}</span>

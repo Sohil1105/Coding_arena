@@ -17,14 +17,13 @@ router.get('/', async (req, res) => {
 // Get problem by ID
 router.get('/:id', async (req, res) => {
     try {
-        // Use findOne to query by the 'id' field from problems.json
-        const problem = await Problem.findOne({ id: req.params.id });
+        const problem = await Problem.findOne({ id: Number(req.params.id) });
         if (!problem) {
             return res.status(404).json({ msg: 'Problem not found' });
         }
         res.json(problem);
     } catch (err) {
-        console.error(err.message);
+        console.error('Error fetching problem by ID:', err.message);
         res.status(500).send('Server Error');
     }
 });
@@ -70,7 +69,7 @@ router.put('/:id', auth, async (req, res) => {
     if (testCases) problemFields.testCases = testCases;
 
     try {
-        let problem = await Problem.findById(req.params.id);
+        let problem = await Problem.findOne({ id: Number(req.params.id) });
 
         if (!problem) return res.status(404).json({ msg: 'Problem not found' });
 
@@ -79,8 +78,8 @@ router.put('/:id', auth, async (req, res) => {
             return res.status(401).json({ msg: 'User not authorized' });
         }
 
-        problem = await Problem.findByIdAndUpdate(
-            req.params.id,
+        problem = await Problem.findOneAndUpdate(
+            { id: Number(req.params.id) },
             { $set: problemFields },
             { new: true }
         );
@@ -95,7 +94,7 @@ router.put('/:id', auth, async (req, res) => {
 // Delete problem
 router.delete('/:id', auth, async (req, res) => {
     try {
-        let problem = await Problem.findById(req.params.id);
+        let problem = await Problem.findOne({ id: Number(req.params.id) });
 
         if (!problem) return res.status(404).json({ msg: 'Problem not found' });
 
@@ -104,7 +103,7 @@ router.delete('/:id', auth, async (req, res) => {
             return res.status(401).json({ msg: 'User not authorized' });
         }
 
-        await Problem.findByIdAndDelete(req.params.id);
+        await Problem.findOneAndDelete({ id: Number(req.params.id) });
 
         res.json({ msg: 'Problem removed' });
     } catch (err) {

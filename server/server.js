@@ -50,7 +50,6 @@ const connectDB = async () => {
 connectDB();
 
 app.use('/api/problems', problemsRoutes);
-app.use('/api/problemdetail', problemsRoutes);
 app.use('/api/submissions', submissionsRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);

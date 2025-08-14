@@ -28,7 +28,7 @@ services:
   frontend:
     build:
       context: ./client
-      dockerfile: DockerFile
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     depends_on:
@@ -45,7 +45,7 @@ services:
 
   compiler:
     build:
-      context: ./server/compiler
+      context: ./temp-compiler/backend
       dockerfile: DockerFile
     ports:
       - "8000:8000"

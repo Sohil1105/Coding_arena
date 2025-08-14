@@ -1,5 +1,5 @@
 # Stage 1: Dependencies
-FROM node:18-alpine as dependencies
+FROM node:18-alpine AS dependencies
 
 WORKDIR /app
 
@@ -7,12 +7,39 @@ COPY package.json package-lock.json ./
 RUN npm ci --production
 
 # Stage 2: Production
-FROM node:18-alpine as production
+FROM node:18-alpine AS production
 
 WORKDIR /app
 
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
+
+# Exclude the compiler directory from the server build context
+# This is handled by .dockerignore, but explicit copy is safer
+# if .dockerignore is not perfectly configured or if there are other issues.
+# However, given the previous error, it's better to be explicit about what to copy.
+# Instead of COPY . ., I will copy specific directories/files.
+
+# Copy server-specific files and directories
+COPY auth.js .
+COPY cleanupSubmissions.js .
+COPY deleteUser.js .
+COPY leaderboard.js .
+COPY problems.js .
+COPY problems.json .
+COPY seed-db.js .
+COPY seedAll.js .
+COPY seedFromJson.js .
+COPY seedSubmissions.js .
+COPY seedUsers.js .
+COPY server.js .
+COPY submissions.js .
+COPY updateUserRole.js .
+COPY users.js .
+COPY ai.js .
+COPY middleware/ ./middleware/
+COPY models/ ./models/
+COPY .env .
 
 EXPOSE 5000
 CMD ["node", "server.js"]

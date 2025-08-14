@@ -12,7 +12,7 @@ router.post('/', auth, async (req, res) => {
 
     try {
         // Fetch problem
-        const problem = await Problem.findById(problemId);
+        const problem = await Problem.findOne({ id: Number(problemId) });
         if (!problem) {
             return res.status(404).json({ msg: 'Problem not found' });
         }
@@ -58,7 +58,7 @@ router.post('/', auth, async (req, res) => {
 
         // New submission record
         const newSubmission = new Submission({
-            problemId,
+            problemId: problem._id,
             code,
             language,
             output: `${outputSummary}\n${detailedOutput}`,

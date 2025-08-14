@@ -70,6 +70,7 @@ const Contribute = () => {
         };
         const body = JSON.stringify({
             ...formData,
+            id: Number(id),
             tags: tags.split(',').map(tag => tag.trim()),
             author: user._id
         });

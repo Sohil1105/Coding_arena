@@ -42,7 +42,7 @@ const Admin = () => {
         };
         try {
             await axios.delete(`${API_BASE_URL}/api/problems/${id}`, config);
-            setProblems(problems.filter(problem => problem._id !== id));
+            setProblems(problems.filter(problem => problem.id !== id));
         } catch (err) {
             console.error(err.response.data);
         }
@@ -57,13 +57,13 @@ const Admin = () => {
             <h2>Admin Panel</h2>
             <div className="problems-list">
                 {problems.map(problem => (
-                    <div key={problem._id} className="admin-problem-item">
+                    <div key={problem.id} className="admin-problem-item">
                         <span>{problem.title}</span>
                         <div className="admin-actions">
                             {user && (user.isAdmin || (problem.author && problem.author._id === user._id)) && (
                                 <>
-                                    <Link to={`/edit-problem/${problem._id}`} className="edit-btn">Edit</Link>
-                                    <button className="delete-btn" onClick={() => deleteProblem(problem._id)}>Delete</button>
+                                    <Link to={`/edit-problem/${problem.id}`} className="edit-btn">Edit</Link>
+                                    <button className="delete-btn" onClick={() => deleteProblem(problem.id)}>Delete</button>
                                 </>
                             )}
                         </div>

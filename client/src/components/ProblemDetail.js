@@ -20,6 +20,10 @@ const ProblemDetail = () => {
   useEffect(() => {
     const fetchProblem = async () => {
       const token = localStorage.getItem('token');
+      if (!token) {
+        setError("Please log in to view the problem details.");
+        return;
+      }
       const config = {
         headers: { 'x-auth-token': token }
       };
@@ -27,8 +31,14 @@ const ProblemDetail = () => {
         const res = await axios.get(`${API_BASE_URL}/api/problems/${id}`, config);
         setProblem(res.data);
       } catch (err) {
-        setError('Error fetching problem details');
-        console.error('Error fetching problem details', err);
+        console.error('Error fetching problem details:', err);
+        if (err.response) {
+          setError(`Error: ${err.response.data.message || 'Problem not found'}`);
+        } else if (err.request) {
+          setError('Network error. Please check your connection.');
+        } else {
+          setError('An unexpected error occurred.');
+        }
       }
     };
     fetchProblem();
@@ -109,7 +119,7 @@ const ProblemDetail = () => {
           'Content-Type': 'application/json',
           'x-auth-token': token
         },
-        body: JSON.stringify({ code, language, problemId: problem.id })
+        body: JSON.stringify({ code, language, problemId: id })
       });
 
       const data = await response.json();

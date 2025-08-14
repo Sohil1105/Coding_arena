@@ -6,7 +6,7 @@ require('dotenv').config();
 const users = [
     {
         name: 'sourav sohil',
-        phone: '1234567890',
+        phone: '9701257999',
         email: 'souravsohil1111@gmail.com',
         password: 'sourav@0511',
         role: 'admin'
