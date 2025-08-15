@@ -7,10 +7,11 @@ import './ProblemDetail.css';
 
 const ProblemDetail = () => {
   const { id } = useParams();
+  // Initialize state from localStorage or default values, keyed by problemId
   const [problem, setProblem] = useState(null);
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState(() => localStorage.getItem(`problemCode-${id}`) || '');
   const [submissionResult, setSubmissionResult] = useState('');
-  const [language, setLanguage] = useState('cpp');
+  const [language, setLanguage] = useState(() => localStorage.getItem(`problemLanguage-${id}`) || 'cpp');
   const [error, setError] = useState(null);
   const [isReviewing, setIsReviewing] = useState(false);
   const [aiReview, setAiReview] = useState('');
@@ -136,6 +137,15 @@ const ProblemDetail = () => {
     }
   };
 
+  // Save code and language to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem(`problemCode-${id}`, code);
+  }, [code, id]);
+
+  useEffect(() => {
+    localStorage.setItem(`problemLanguage-${id}`, language);
+  }, [language, id]);
+
   if (error) return <div className="error-message">{error}</div>;
   if (!problem) return <div className="loading">Loading problem details...</div>;
 
@@ -230,7 +240,7 @@ const ProblemDetail = () => {
               <option value="c">C</option>
               <option value="cpp">C++</option>
               <option value="java">Java</option>
-              <option value="py">Python</option>
+              <option value="python">Python</option>
             </select>
           </div>
         </div>

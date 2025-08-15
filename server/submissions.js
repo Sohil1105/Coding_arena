@@ -27,33 +27,104 @@ router.post('/', auth, async (req, res) => {
             });
         }
 
-        // Send to compiler service
-        const compilerResponse = await axios.post(`${process.env.COMPILER_URL}/submit`, {
-            code,
-            extension: language, // Compiler service expects 'extension'
-            testcases: problem.testCases || [] // Compiler service expects 'testcases'
-        }, {
-            timeout: 30000 // 30 second timeout
-        });
+        let allTestsPassed = true;
+        const testResults = [];
+        let overallOutput = '';
+
+        if (problem.testCases && problem.testCases.length > 0) {
+            for (const [index, testCase] of problem.testCases.entries()) {
+                try {
+                    const compilerResponse = await axios.post(`${process.env.COMPILER_URL}/run`, {
+                        code,
+                        language,
+                        input: testCase.input || ''
+                    }, {
+                        timeout: 30000 // 30 second timeout
+                    });
+
+                    const actualOutput = compilerResponse.data.output ? compilerResponse.data.output.trim() : '';
+                    const expectedOutput = testCase.output ? testCase.output.trim() : '';
+                    const passed = actualOutput === expectedOutput;
+
+                    testResults.push({
+                        input: testCase.input,
+                        expectedOutput: testCase.output,
+                        actualOutput: actualOutput,
+                        passed: passed,
+                        error: compilerResponse.data.error || null
+                    });
+
+                    if (!passed) {
+                        allTestsPassed = false;
+                    }
+                    overallOutput += `Test Case ${index + 1}: ${passed ? 'Passed' : 'Failed'}\nOutput: ${actualOutput}\nExpected: ${expectedOutput}\n\n`;
+
+                } catch (compilerErr) {
+                    allTestsPassed = false;
+                    const errorMessage = compilerErr.response?.data?.error || compilerErr.message || 'Compiler error';
+                    testResults.push({
+                        input: testCase.input,
+                        expectedOutput: testCase.output,
+                        actualOutput: '',
+                        passed: false,
+                        error: errorMessage
+                    });
+                    overallOutput += `Test Case ${index + 1}: Failed (Error)\nError: ${errorMessage}\n\n`;
+                    console.error(`Error running test case ${index + 1}:`, compilerErr);
+                }
+            }
+        } else {
+            // If no test cases, run once without input or with a default empty input
+            try {
+                const compilerResponse = await axios.post(`${process.env.COMPILER_URL}/run`, {
+                    code,
+                    language,
+                    input: ''
+                }, {
+                    timeout: 30000
+                });
+                overallOutput = compilerResponse.data.output || 'No output received';
+                allTestsPassed = compilerResponse.data.success;
+                testResults.push({
+                    input: '',
+                    expectedOutput: '',
+                    actualOutput: overallOutput,
+                    passed: allTestsPassed,
+                    error: compilerResponse.data.error || null
+                });
+            } catch (compilerErr) {
+                allTestsPassed = false;
+                const errorMessage = compilerErr.response?.data?.error || compilerErr.message || 'Compiler error';
+                overallOutput = `Error: ${errorMessage}`;
+                testResults.push({
+                    input: '',
+                    expectedOutput: '',
+                    actualOutput: '',
+                    passed: false,
+                    error: errorMessage
+                });
+                console.error('Error running code without test cases:', compilerErr);
+            }
+        }
 
         // Create submission record
         const newSubmission = new Submission({
             problemId: problem._id,
             code,
             language,
-            output: compilerResponse.data.output || 'No output received',
+            output: overallOutput,
             userId: req.user.id,
-            status: compilerResponse.data.success ? 'Completed' : 'Failed',
-            testResults: compilerResponse.data.testResults || [],
+            status: allTestsPassed ? 'Accepted' : 'Failed',
+            testResults: testResults,
             submittedAt: new Date()
         });
 
         await newSubmission.save();
 
         res.json({
-            success: compilerResponse.data.success,
-            output: compilerResponse.data.output || 'No output received',
-            testResults: compilerResponse.data.testResults || [],
+            success: allTestsPassed,
+            output: overallOutput,
+            testResults: testResults,
             submission: newSubmission
         });
 

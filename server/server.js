@@ -1,4 +1,4 @@
-require('dotenv').config({ path: './server/.env' });
+require('dotenv').config();
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -57,14 +57,12 @@ if (!process.env.JWT_SECRET) {
     console.warn('Warning: JWT_SECRET is not set. JWT authentication will fail. Set JWT_SECRET in your environment variables or .env file.');
 }
 
-if (!process.env.MONGO_URL) {
-    console.error('Error: MONGO_URL environment variable is required. Please set it to your MongoDB Atlas connection string.');
-    process.exit(1);
-}
-
 // Health check
 app.get('/', (req, res) => {
-    res.status(200).send('Backend API is running successfully.');
+    res.status(200).json({ 
+        status: 'success',
+        message: 'Backend API is running successfully.'
+    });
 });
 
 // Test compiler endpoint removed

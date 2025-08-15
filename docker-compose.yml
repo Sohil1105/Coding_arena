@@ -45,7 +45,7 @@ services:
 
   compiler:
     build:
-      context: ./server/compiler-service
+      context: ./compiler
       dockerfile: Dockerfile
     ports:
       - "8000:8000"

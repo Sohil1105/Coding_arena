@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Compiler.css';
 
 const Compiler = () => {
-    const [code, setCode] = useState('');
-    const [language, setLanguage] = useState('cpp');
-    const [input, setInput] = useState('');
+    // Initialize state from localStorage or default values
+    const [code, setCode] = useState(() => localStorage.getItem('compilerCode') || '');
+    const [language, setLanguage] = useState(() => localStorage.getItem('compilerLanguage') || 'cpp');
+    const [input, setInput] = useState(() => localStorage.getItem('compilerInput') || '');
     const [output, setOutput] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -29,7 +30,7 @@ const Compiler = () => {
 
         try {
             const response = await axios.post(`${process.env.REACT_APP_COMPILER_URL}/run`, {
-                extension: language, // Compiler service expects 'extension'
+                language, // Compiler service expects 'language'
                 code,
                 input
             });
@@ -56,9 +57,26 @@ const Compiler = () => {
         return templates[lang] || '';
     };
 
+    // Save code, language, and input to localStorage whenever they change
+    useEffect(() => {
+        localStorage.setItem('compilerCode', code);
+    }, [code]);
+
+    useEffect(() => {
+        localStorage.setItem('compilerLanguage', language);
+        // Update code template when language changes, but only if code is empty or default
+        if (!code || code === getLanguageTemplate(language)) { // Check if code is empty or matches previous language's template
+            setCode(getLanguageTemplate(language));
+        }
+    }, [language]);
+
+    useEffect(() => {
+        localStorage.setItem('compilerInput', input);
+    }, [input]);
+
     const handleLanguageChange = (lang) => {
         setLanguage(lang);
-        setCode(getLanguageTemplate(lang));
+        // The code update is now handled by the useEffect for language
     };
 
     return (

@@ -1,17 +1,22 @@
-FROM node:22-alpine3.21
+# Use the Node.js 16 Alpine image as the base image
+FROM node:18-alpine
 
+# Set the working directory inside the container
 WORKDIR /app
 
-# Set environment variables
-RUN apk update && apk add --no-cache g++ gcc python3 openjdk17 
+# Install compilers and runtimes for C, C++, Java, and Python
+RUN apk update && apk add --no-cache gcc g++ openjdk17 python3
+
+# Copy only the package.json and package-lock.json files and install dependencies.
+# This allows Docker to cache this layer when package files don't change.
 COPY package*.json ./
-ENV CORS_ORIGIN=https://codejudge.jaindevshrut.me,https://backend.jaindevshrut.me
 RUN npm install
+
+# Copy the rest of the application code.
+# This layer will only be rebuilt if application code changes.
 COPY . .
-ENV PORT=8080
-ENV JWT_SECRET=qvB6ZAxKD3q1q4s5sL0XTSNsCzmL2v6lWjxYZ93m1wZEMjCHFlff6HXlZwEXtVRV
 
+EXPOSE 8000
 
-EXPOSE 8080
-
-CMD ["node", "index.js"]
+# Specify the command to run when the container starts
+CMD [ "node", "index.js" ]

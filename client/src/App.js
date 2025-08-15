@@ -14,7 +14,7 @@ import Admin from './components/Admin';
 import Leaderboard from './components/Leaderboard';
 import Profile from './components/Profile';
 import Submissions from './components/Submissions';
-import ArenaX from './components/Landing';
+import Landing from './components/Landing';
 import EditProblem from './components/EditProblem';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
@@ -55,7 +55,7 @@ function App() {
             <div className="main-container">
                 <Routes>
                     {/* App routes */}
-                    <Route path="/" element={<ArenaX />} />
+                    <Route path="/" element={<Landing />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/login" element={<Login setUser={setUser} />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import "./Landing.css";
 
-const ArenaX = () => {
+const Landing = () => {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
@@ -42,4 +42,4 @@ const ArenaX = () => {
   );
 };
 
-export default ArenaX;
+export default Landing;
