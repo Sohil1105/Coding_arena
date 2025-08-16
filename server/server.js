@@ -13,7 +13,7 @@ const seedAll = require('./seedAll');
 
 const app = express();
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:3001'],
+    origin: [process.env.CLIENT_URL],
     credentials: true
 }));
 app.use(express.json());
