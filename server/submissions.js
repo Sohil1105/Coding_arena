@@ -3,6 +3,7 @@ const router = express.Router();
 const Submission = require('./models/submission');
 const auth = require('./middleware/auth');
 const Problem = require('./models/problem');
+const User = require('./models/user');
 const axios = require('axios');
 
 // New submission with compiler service
@@ -120,6 +121,15 @@ router.post('/', auth, async (req, res) => {
         });
 
         await newSubmission.save();
+
+        if (allTestsPassed) {
+            const user = await User.findById(req.user.id);
+            if (user && !user.solvedProblems.includes(problem._id)) {
+                user.solvedProblems.push(problem._id);
+                user.score += 10; // or some value from the problem model
+                await user.save();
+            }
+        }
 
         res.json({
             success: allTestsPassed,

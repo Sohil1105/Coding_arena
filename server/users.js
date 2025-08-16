@@ -143,7 +143,7 @@ router.get('/:id/profile', auth, async (req, res) => {
         const userId = req.params.id;
 
         // Get user
-        const user = await User.findById(userId).select('-password');
+        const user = await User.findById(userId).select('-password').populate('solvedProblems', 'title');
         if (!user) {
             return res.status(404).json({ msg: 'User not found' });
         }
@@ -154,30 +154,20 @@ router.get('/:id/profile', auth, async (req, res) => {
         // Get submissions
         const submissions = await Submission.find({ userId: userId }).populate('problemId', 'title');
         
-        const problemStatus = {};
-
+        const attemptedProblems = new Set();
         submissions.forEach(sub => {
-            const problemId = sub.problemId._id.toString();
-            const isSolved = sub.output.startsWith('Accepted');
-
-            if (!problemStatus[problemId] || !problemStatus[problemId].solved) {
-                problemStatus[problemId] = {
-                    title: sub.problemId.title,
-                    solved: isSolved,
-                };
+            if (!user.solvedProblems.some(p => p._id.equals(sub.problemId._id))) {
+                attemptedProblems.add(sub.problemId);
             }
         });
-
-        const solvedProblems = Object.values(problemStatus).filter(p => p.solved);
-        const attemptedProblems = Object.values(problemStatus).filter(p => !p.solved);
 
         res.json({
             user,
             contributedProblems,
-            solvedProblems,
-            attemptedProblems,
-            solvedCount: solvedProblems.length,
-            attemptedCount: attemptedProblems.length,
+            solvedProblems: user.solvedProblems,
+            attemptedProblems: Array.from(attemptedProblems),
+            solvedCount: user.solvedProblems.length,
+            attemptedCount: attemptedProblems.size,
         });
 
     } catch (err) {

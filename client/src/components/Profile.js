@@ -74,6 +74,10 @@ const Profile = () => {
 
                 <div className="profile-stats">
                     <div className="stat-card">
+                        <p className="stat-value">{user.score}</p>
+                        <p className="stat-label">Score</p>
+                    </div>
+                    <div className="stat-card">
                         <p className="stat-value">{solvedCount}</p>
                         <p className="stat-label">Solved</p>
                     </div>

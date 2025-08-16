@@ -7,16 +7,10 @@ const Problem = require('./models/problem');
 // Top solvers
 router.get('/solvers', async (req, res) => {
     try {
-        const topSolvers = await Submission.aggregate([
-            { $match: { output: { $regex: /^Accepted/ } } },
-            { $group: { _id: { userId: '$userId', problemId: '$problemId' } } },
-            { $group: { _id: '$_id.userId', score: { $sum: 1 } } },
-            { $sort: { score: -1 } },
-            { $limit: 10 },
-            { $lookup: { from: 'users', localField: '_id', foreignField: '_id', as: 'userDetails' } },
-            { $unwind: '$userDetails' },
-            { $project: { name: '$userDetails.name', score: 1 } }
-        ]);
+        const topSolvers = await User.find({})
+            .sort({ score: -1 })
+            .limit(10)
+            .select('name score');
         res.json(topSolvers);
     } catch (err) {
         console.error(err.message);
