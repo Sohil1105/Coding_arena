@@ -62,7 +62,10 @@ router.post('/', auth, async (req, res) => {
 
                 } catch (compilerErr) {
                     allTestsPassed = false;
-                    const errorMessage = compilerErr.response?.data?.error || compilerErr.message || 'Compiler error';
+                    let errorMessage = compilerErr.response?.data?.error || compilerErr.message || 'Compiler error';
+                    if (typeof errorMessage === 'object') {
+                        errorMessage = JSON.stringify(errorMessage);
+                    }
                     testResults.push({
                         input: testCase.input,
                         expectedOutput: testCase.output,
@@ -95,7 +98,10 @@ router.post('/', auth, async (req, res) => {
                 });
             } catch (compilerErr) {
                 allTestsPassed = false;
-                const errorMessage = compilerErr.response?.data?.error || compilerErr.message || 'Compiler error';
+                let errorMessage = compilerErr.response?.data?.error || compilerErr.message || 'Compiler error';
+                if (typeof errorMessage === 'object') {
+                    errorMessage = JSON.stringify(errorMessage);
+                }
                 overallOutput = `Error: ${errorMessage}`;
                 testResults.push({
                     input: '',
