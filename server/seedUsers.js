@@ -21,17 +21,19 @@ const users = [
 ];
 
 const seedUsers = async () => {
-    await User.deleteMany({});
-
-    for (const user of users) {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(user.password, salt);
-        user.password = hashedPassword;
-        const newUser = new User(user);
-        await newUser.save();
+    for (const userData of users) {
+        const existingUser = await User.findOne({ email: userData.email });
+        if (!existingUser) {
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(userData.password, salt);
+            const newUser = new User({ ...userData, password: hashedPassword });
+            await newUser.save();
+            console.log(`User ${userData.email} seeded.`);
+        } else {
+            console.log(`User ${userData.email} already exists, skipping.`);
+        }
     }
-
-    console.log('Users collection seeded!');
+    console.log('Users collection seeding process completed.');
 };
 
 module.exports = seedUsers;
