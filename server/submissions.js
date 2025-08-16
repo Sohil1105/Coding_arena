@@ -126,7 +126,21 @@ router.post('/', auth, async (req, res) => {
             const user = await User.findById(req.user.id);
             if (user && !user.solvedProblems.includes(problem._id)) {
                 user.solvedProblems.push(problem._id);
-                user.score += 10; // or some value from the problem model
+                let scoreToAdd = 0;
+                switch (problem.difficulty) {
+                    case 'Easy':
+                        scoreToAdd = 10;
+                        break;
+                    case 'Medium':
+                        scoreToAdd = 20;
+                        break;
+                    case 'Hard':
+                        scoreToAdd = 30;
+                        break;
+                    default:
+                        scoreToAdd = 10;
+                }
+                user.score += scoreToAdd;
                 await user.save();
             }
         }
