@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import API_BASE_URL from '../config';
@@ -7,11 +7,10 @@ import './ProblemDetail.css';
 
 const ProblemDetail = () => {
   const { id } = useParams();
-  // Initialize state from localStorage or default values, keyed by problemId
   const [problem, setProblem] = useState(null);
-  const [code, setCode] = useState(() => localStorage.getItem(`problemCode-${id}`) || '');
+  const [code, setCode] = useState('');
   const [submissionResult, setSubmissionResult] = useState('');
-  const [language, setLanguage] = useState(() => localStorage.getItem(`problemLanguage-${id}`) || 'cpp');
+  const [language, setLanguage] = useState('cpp');
   const [error, setError] = useState(null);
   const [isReviewing, setIsReviewing] = useState(false);
   const [aiReview, setAiReview] = useState('');
@@ -137,14 +136,64 @@ const ProblemDetail = () => {
     }
   };
 
-  // Save code and language to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem(`problemCode-${id}`, code);
-  }, [code, id]);
+  const getLanguageTemplate = (lang) => {
+    const templates = {
+        'c': '#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}',
+        'cpp': '#include <iostream>\n\nint main() {\n    std::cout << "Hello, World!" << std::endl;\n    return 0;\n}',
+        'java': 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
+        'python': 'print("Hello, World!")'
+    };
+    return templates[lang] || '';
+  };
+
+  const saveSnippet = useCallback(async () => {
+    const token = localStorage.getItem('token');
+    if (!token || !id) return;
+
+    try {
+        await axios.post(`${API_BASE_URL}/api/snippets`, {
+            problemId: id,
+            code,
+            language
+        }, {
+            headers: { 'x-auth-token': token }
+        });
+    } catch (err) {
+        console.error('Failed to save snippet:', err);
+    }
+  }, [code, language, id]);
 
   useEffect(() => {
-    localStorage.setItem(`problemLanguage-${id}`, language);
-  }, [language, id]);
+    const fetchSnippet = async () => {
+        const token = localStorage.getItem('token');
+        if (!token || !id) return;
+
+        try {
+            const res = await axios.get(`${API_BASE_URL}/api/snippets/${id}`, {
+                headers: { 'x-auth-token': token }
+            });
+            setCode(res.data.code);
+            setLanguage(res.data.language);
+        } catch (err) {
+            // If no snippet is found, set the default template
+            if (err.response && err.response.status === 404) {
+                setCode(getLanguageTemplate(language));
+            } else {
+                console.error('Failed to fetch snippet:', err);
+            }
+        }
+    };
+
+    fetchSnippet();
+  }, [id, language]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+        saveSnippet();
+    }, 5000); // Save every 5 seconds
+
+    return () => clearTimeout(timer);
+  }, [code, language, saveSnippet]);
 
   if (error) return <div className="error-message">{error}</div>;
   if (!problem) return <div className="loading">Loading problem details...</div>;

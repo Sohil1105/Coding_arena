@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './Compiler.css';
+import API_BASE_URL from '../config';
 
-const Compiler = () => {
-    // Initialize state from localStorage or default values
-    const [code, setCode] = useState(() => localStorage.getItem('compilerCode') || '');
-    const [language, setLanguage] = useState(() => localStorage.getItem('compilerLanguage') || 'cpp');
-    const [input, setInput] = useState(() => localStorage.getItem('compilerInput') || '');
+const Compiler = ({ problemId }) => {
+    const [code, setCode] = useState('');
+    const [language, setLanguage] = useState('cpp');
+    const [input, setInput] = useState('');
     const [output, setOutput] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -57,22 +57,54 @@ const Compiler = () => {
         return templates[lang] || '';
     };
 
-    // Save code, language, and input to localStorage whenever they change
-    useEffect(() => {
-        localStorage.setItem('compilerCode', code);
-    }, [code]);
+    const saveSnippet = useCallback(async () => {
+        const token = localStorage.getItem('token');
+        if (!token || !problemId) return;
 
-    useEffect(() => {
-        localStorage.setItem('compilerLanguage', language);
-        // Update code template when language changes, but only if code is empty or default
-        if (!code || code === getLanguageTemplate(language)) { // Check if code is empty or matches previous language's template
-            setCode(getLanguageTemplate(language));
+        try {
+            await axios.post(`${API_BASE_URL}/api/snippets`, {
+                problemId,
+                code,
+                language
+            }, {
+                headers: { 'x-auth-token': token }
+            });
+        } catch (err) {
+            console.error('Failed to save snippet:', err);
         }
-    }, [language]);
+    }, [code, language, problemId]);
 
     useEffect(() => {
-        localStorage.setItem('compilerInput', input);
-    }, [input]);
+        const fetchSnippet = async () => {
+            const token = localStorage.getItem('token');
+            if (!token || !problemId) return;
+
+            try {
+                const res = await axios.get(`${API_BASE_URL}/api/snippets/${problemId}`, {
+                    headers: { 'x-auth-token': token }
+                });
+                setCode(res.data.code);
+                setLanguage(res.data.language);
+            } catch (err) {
+                // If no snippet is found, set the default template
+                if (err.response && err.response.status === 404) {
+                    setCode(getLanguageTemplate(language));
+                } else {
+                    console.error('Failed to fetch snippet:', err);
+                }
+            }
+        };
+
+        fetchSnippet();
+    }, [problemId, language]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            saveSnippet();
+        }, 5000); // Save every 5 seconds
+
+        return () => clearTimeout(timer);
+    }, [code, language, saveSnippet]);
 
     const handleLanguageChange = (lang) => {
         setLanguage(lang);

@@ -52,6 +52,7 @@ app.use('/api/users', usersRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/snippets', require('./codeSnippets'));
 
 if (!process.env.JWT_SECRET) {
     console.warn('Warning: JWT_SECRET is not set. JWT authentication will fail. Set JWT_SECRET in your environment variables or .env file.');
