@@ -199,7 +199,8 @@
   margin-bottom: 12px;
 }
 .submit-button,
-.run-button { /* Apply same style to submit and run buttons */
+.run-button,
+.ai-review-button { /* Apply same style to all buttons */
   flex: 1;
   background: linear-gradient(90deg, #00e6ff 0%, #38b2ac 100%);
   color: #191c24;
@@ -211,12 +212,14 @@
   transition: background 0.25s, transform 0.15s, box-shadow 0.2s;
 }
 .submit-button:hover,
-.run-button:hover {
+.run-button:hover,
+.ai-review-button:hover {
   transform: translateY(-1px);
   box-shadow: 0 0 12px #00e6ff80;
 }
 .submit-button:disabled,
-.run-button:disabled {
+.run-button:disabled,
+.ai-review-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }

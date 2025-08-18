@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import './dashboard.css';
 import axios from 'axios';
 import API_BASE_URL from '../config';
+import Loader from './Loader'; // Import Loader
 
 const Dashboard = () => {
     const [problems, setProblems] = useState([]);
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true); // Add loading state
 
     useEffect(() => {
         const fetchProblems = async () => {
@@ -38,11 +40,17 @@ const Dashboard = () => {
                 }
                 
                 setError(errorMessage);
+            } finally {
+                setLoading(false); // Set loading to false after fetch
             }
         };
 
         fetchProblems();
     }, []);
+
+    if (loading) {
+        return <Loader />;
+    }
 
     return (
         <div className="dashboard-page">

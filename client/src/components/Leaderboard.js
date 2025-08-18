@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Leaderboard.css';
 import API_BASE_URL from '../config';
+import Loader from './Loader'; // Import Loader
 
 const Leaderboard = () => {
     const [topSolvers, setTopSolvers] = useState([]);
@@ -15,9 +16,9 @@ const Leaderboard = () => {
                 const contributorsRes = await axios.get(`${API_BASE_URL}/api/leaderboard/contributors`);
                 setTopSolvers(solversRes.data);
                 setTopContributors(contributorsRes.data);
-                setLoading(false);
             } catch (err) {
                 console.error(err);
+            } finally {
                 setLoading(false);
             }
         };
@@ -25,7 +26,7 @@ const Leaderboard = () => {
     }, []);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <Loader />;
     }
 
     return (

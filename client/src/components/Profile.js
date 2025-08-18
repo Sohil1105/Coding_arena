@@ -3,8 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Profile.css';
 import API_BASE_URL from '../config';
+import Loader from './Loader'; // Import Loader
 
-const Profile = () => {
+const Profile = ({ user: loggedInUser }) => {
     const navigate = useNavigate();
     const { id } = useParams();
     const [profileData, setProfileData] = useState(null);
@@ -23,24 +24,27 @@ const Profile = () => {
                     'x-auth-token': token
                 }
             };
+            
+            const userId = loggedInUser ? loggedInUser.id : id;
+
             try {
-                const res = await axios.get(`${API_BASE_URL}/api/users/${id}/profile`, config);
+                const res = await axios.get(`${API_BASE_URL}/api/users/${userId}/profile`, config);
                 setProfileData(res.data);
-                setLoading(false);
             } catch (err) {
                 console.error('Error fetching profile data:', err);
                 if (err.response && err.response.status === 401) {
                     localStorage.removeItem('token');
                     navigate('/login');
                 }
+            } finally {
                 setLoading(false);
             }
         };
         fetchProfileData();
-    }, [id, navigate]);
+    }, [id, navigate, loggedInUser]);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <Loader />;
     }
 
     if (!profileData) {

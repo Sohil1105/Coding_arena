@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import './Submissions.css';
 import API_BASE_URL from '../config';
+import Loader from './Loader'; // Import Loader
 
 const Submissions = () => {
     const { id } = useParams(); // User ID
@@ -20,9 +21,9 @@ const Submissions = () => {
             try {
                 const res = await axios.get(`${API_BASE_URL}/api/submissions/user/${id}`, config);
                 setSubmissions(res.data);
-                setLoading(false);
             } catch (err) {
                 console.error(err);
+            } finally {
                 setLoading(false);
             }
         };
@@ -30,7 +31,7 @@ const Submissions = () => {
     }, [id]);
 
     if (loading) {
-        return <div className="submissions-empty">Loading submissions...</div>;
+        return <Loader />;
     }
 
     return (

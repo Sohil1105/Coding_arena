@@ -161,7 +161,9 @@ const ProblemDetail = () => {
             setError(response.data.error || 'Compilation failed');
         }
     } catch (err) {
-        setError(err.response?.data?.error || 'Failed to compile code');
+        const errorMessage = err.response?.data?.error || err.message || 'Failed to compile code';
+        setError(errorMessage);
+        setOutput(errorMessage); // Also display the error in the output panel
     } finally {
         setIsRunning(false);
     }

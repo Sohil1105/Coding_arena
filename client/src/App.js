@@ -63,7 +63,7 @@ function App() {
                     <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
                     <Route path="/edit-problem/:id" element={<ProtectedRoute><EditProblem /></ProtectedRoute>} />
                     <Route path="/leaderboard" element={<Leaderboard />} />
-                    <Route path="/profile/:id" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                    <Route path="/profile/:id" element={<ProtectedRoute><Profile user={user} /></ProtectedRoute>} />
                     <Route path="/settings/:id" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                     <Route path="/submissions/:id" element={<Submissions />} />
                 </Routes>
