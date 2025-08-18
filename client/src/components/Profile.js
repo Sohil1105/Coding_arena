@@ -7,7 +7,7 @@ import Loader from './Loader'; // Import Loader
 
 const Profile = ({ user: loggedInUser }) => {
     const navigate = useNavigate();
-    const { id } = useParams();
+    const { id: paramId } = useParams(); // Rename id from useParams to avoid conflict
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -25,10 +25,16 @@ const Profile = ({ user: loggedInUser }) => {
                 }
             };
             
-            const userId = loggedInUser ? loggedInUser.id : id;
+            // Use loggedInUser._id if available, otherwise fallback to paramId
+            const userIdToFetch = loggedInUser ? loggedInUser.id : paramId;
+
+            if (!userIdToFetch) {
+                setLoading(false);
+                return;
+            }
 
             try {
-                const res = await axios.get(`${API_BASE_URL}/api/users/${userId}/profile`, config);
+                const res = await axios.get(`${API_BASE_URL}/api/users/${userIdToFetch}/profile`, config);
                 setProfileData(res.data);
             } catch (err) {
                 console.error('Error fetching profile data:', err);
@@ -41,7 +47,7 @@ const Profile = ({ user: loggedInUser }) => {
             }
         };
         fetchProfileData();
-    }, [id, navigate, loggedInUser]);
+    }, [paramId, navigate, loggedInUser]);
 
     if (loading) {
         return <Loader />;
@@ -54,7 +60,9 @@ const Profile = ({ user: loggedInUser }) => {
     const { user, contributedProblems, solvedProblems, attemptedProblems, solvedCount, attemptedCount } = profileData;
 
     const handleSettingsClick = () => {
-        navigate(`/settings/${id}`);
+        // Ensure we navigate to the correct user ID for settings
+        const settingsId = loggedInUser ? loggedInUser.id : paramId;
+        navigate(`/settings/${settingsId}`);
     };
 
     const capitalizeFirstLetter = (string) => {
