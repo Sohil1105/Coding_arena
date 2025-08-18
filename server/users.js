@@ -143,7 +143,8 @@ router.get('/:id/profile', auth, async (req, res) => {
         const userId = req.params.id;
 
         // Get user
-        const user = await User.findById(userId).select('-password').populate('solvedProblems', 'title');
+        // Populate solvedProblems with both _id and title for accurate comparison and display
+        const user = await User.findById(userId).select('-password').populate('solvedProblems', '_id title');
         if (!user) {
             return res.status(404).json({ msg: 'User not found' });
         }
@@ -152,11 +153,12 @@ router.get('/:id/profile', auth, async (req, res) => {
         const contributedProblems = await Problem.find({ author: userId });
 
         // Get submissions
-        const submissions = await Submission.find({ userId: userId }).populate('problemId', 'title');
+        const submissions = await Submission.find({ userId: userId }).populate('problemId', '_id title'); // Populate with _id and title
         
         const attemptedProblems = new Set();
         submissions.forEach(sub => {
-            if (!user.solvedProblems.some(p => p._id.equals(sub.problemId._id))) {
+            // Ensure problemId exists and is populated before accessing its properties
+            if (sub.problemId && !user.solvedProblems.some(p => p._id.equals(sub.problemId._id))) {
                 attemptedProblems.add(sub.problemId);
             }
         });

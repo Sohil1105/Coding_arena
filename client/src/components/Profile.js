@@ -19,20 +19,22 @@ const Profile = ({ user: loggedInUser }) => {
                 return;
             }
             
+            // Determine which user's profile to fetch
+            // Prioritize loggedInUser.id if available, otherwise use paramId
+            const userIdToFetch = loggedInUser?.id || paramId; // Use optional chaining for safety
+
+            if (!userIdToFetch) {
+                setLoading(false);
+                setProfileData(null);
+                return;
+            }
+
             const config = {
                 headers: {
                     'x-auth-token': token
                 }
             };
             
-            // Use loggedInUser._id if available, otherwise fallback to paramId
-            const userIdToFetch = loggedInUser ? loggedInUser.id : paramId;
-
-            if (!userIdToFetch) {
-                setLoading(false);
-                return;
-            }
-
             try {
                 const res = await axios.get(`${API_BASE_URL}/api/users/${userIdToFetch}/profile`, config);
                 setProfileData(res.data);
@@ -42,12 +44,23 @@ const Profile = ({ user: loggedInUser }) => {
                     localStorage.removeItem('token');
                     navigate('/login');
                 }
+                setProfileData(null);
             } finally {
                 setLoading(false);
             }
         };
-        fetchProfileData();
-    }, [paramId, navigate, loggedInUser]);
+
+        // Only fetch if loggedInUser is available and has an ID, or if paramId is present
+        // This ensures we don't try to fetch with a null ID
+        if (loggedInUser?.id || paramId) {
+            setLoading(true); // Always set loading true before starting fetch
+            fetchProfileData();
+        } else {
+            // If neither loggedInUser.id nor paramId is available, we are not ready to fetch
+            setLoading(false);
+            setProfileData(null);
+        }
+    }, [loggedInUser, paramId, navigate]);
 
     if (loading) {
         return <Loader />;
@@ -106,8 +119,8 @@ const Profile = ({ user: loggedInUser }) => {
                 <div className="profile-problems">
                     <h3 className="problem-list-title">Problems Solved ({solvedCount})</h3>
                     <ul className="problem-list">
-                        {solvedProblems.filter(problem => problem).map((problem, index) => (
-                            <li key={index} className="problem-item">
+                        {solvedProblems.filter(problem => problem).map((problem) => (
+                            <li key={problem._id} className="problem-item">
                                 <a href={`/problems/${problem._id}`}>{problem.title}</a>
                             </li>
                         ))}
@@ -117,8 +130,8 @@ const Profile = ({ user: loggedInUser }) => {
                 <div className="profile-problems">
                     <h3 className="problem-list-title">Problems Attempted ({attemptedCount})</h3>
                     <ul className="problem-list">
-                        {attemptedProblems.filter(problem => problem).map((problem, index) => (
-                            <li key={index} className="problem-item">
+                        {attemptedProblems.filter(problem => problem).map((problem) => (
+                            <li key={problem._id} className="problem-item">
                                 <a href={`/problems/${problem._id}`}>{problem.title}</a>
                             </li>
                         ))}
