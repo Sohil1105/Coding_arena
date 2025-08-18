@@ -16,6 +16,10 @@ const ProblemDetail = () => {
   const [aiReview, setAiReview] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState('description');
+  const [input, setInput] = useState(''); // New state for custom input
+  const [output, setOutput] = useState(''); // New state for custom output
+  const [isRunning, setIsRunning] = useState(false); // New state for run button loading
+  const [showAiReviewModal, setShowAiReviewModal] = useState(false); // New state for AI review modal
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -59,6 +63,7 @@ const ProblemDetail = () => {
     setIsSubmitting(true);
     setError(null);
     setSubmissionResult('Submitting your code... Please wait.');
+    setOutput(''); // Clear previous run output
 
         try {
           const res = await axios.post(`${API_BASE_URL}/api/submissions`, {
@@ -129,10 +134,40 @@ const ProblemDetail = () => {
       }
 
       setAiReview(data.review || 'No review available');
+      setShowAiReviewModal(true); // Show the modal after getting review
     } catch (err) {
       setError(err.message || 'An error occurred while getting AI review');
     } finally {
       setIsReviewing(false);
+    }
+  };
+
+  const runCode = async () => {
+    if (!code.trim()) {
+        setError('Please enter some code');
+        return;
+    }
+
+    setIsRunning(true);
+    setError('');
+    setOutput('');
+
+    try {
+        const response = await axios.post(`${process.env.REACT_APP_COMPILER_URL}/run`, {
+            language,
+            code,
+            input
+        });
+
+        if (response.data.success) {
+            setOutput(response.data.output);
+        } else {
+            setError(response.data.error || 'Compilation failed');
+        }
+    } catch (err) {
+        setError(err.response?.data?.error || 'Failed to compile code');
+    } finally {
+        setIsRunning(false);
     }
   };
 
@@ -309,20 +344,46 @@ const ProblemDetail = () => {
             <button onClick={handleSubmit} className="submit-button" disabled={isSubmitting}>
               {isSubmitting ? 'Submitting...' : 'Submit Code'}
             </button>
+            <button onClick={runCode} className="run-button" disabled={isRunning}>
+              {isRunning ? 'Running...' : 'Run Code'}
+            </button>
             <button onClick={handleAiReview} className="ai-review-button" disabled={isReviewing}>
               {isReviewing ? 'Getting Review...' : 'Get AI Review'}
             </button>
           </div>
 
-          <div className="output-section">
-            <h3>Output:</h3>
-            <pre>{submissionResult || 'No output yet. Submit your code to see results.'}</pre>
+          <div className="input-output-section">
+            <div className="input-section">
+              <h3>Input:</h3>
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Enter custom input (optional)..."
+                className="custom-input-editor"
+              />
+            </div>
+            <div className="output-section">
+              <h3>Output:</h3>
+              <pre className="output-display">{output || 'Run your code to see output here.'}</pre>
+            </div>
           </div>
 
-          {aiReview && (
-            <div className="output-section">
-              <h3>AI Review:</h3>
-              <pre>{aiReview}</pre>
+          <div className="submission-result-section">
+            <h3>Submission Result:</h3>
+            <pre>{submissionResult || 'No submission result yet.'}</pre>
+          </div>
+
+          {showAiReviewModal && (
+            <div className="ai-review-modal-overlay">
+              <div className="ai-review-modal">
+                <div className="modal-header">
+                  <h3>AI Review:</h3>
+                  <button className="close-button" onClick={() => setShowAiReviewModal(false)}>X</button>
+                </div>
+                <div className="modal-content">
+                  <pre>{aiReview}</pre>
+                </div>
+              </div>
             </div>
           )}
         </div>

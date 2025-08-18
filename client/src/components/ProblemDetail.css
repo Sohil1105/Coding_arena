@@ -247,6 +247,157 @@
   color: #121820;
 }
 
+/* Custom Input/Output Section */
+.input-output-section {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.input-section,
+.output-section {
+  flex: 1;
+  background: rgba(19, 26, 42, 0.97);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1.2px solid rgba(33, 203, 255, 0.1);
+  color: #bfcad6;
+  font-size: 0.93rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-section h3,
+.output-section h3,
+.submission-result-section h3 {
+  color: #00e6ff;
+  margin-bottom: 0.5rem;
+}
+
+.custom-input-editor {
+  width: 100%;
+  flex-grow: 1;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 5px;
+  padding: 10px;
+  color: #bfcad6;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.88rem;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.output-display {
+  flex-grow: 1;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 5px;
+  padding: 10px;
+  color: #bfcad6;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.88rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-y: auto;
+}
+
+.submission-result-section {
+  margin-top: 12px;
+  background: rgba(19, 26, 42, 0.97);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1.2px solid rgba(33, 203, 255, 0.1);
+  color: #bfcad6;
+  font-size: 0.93rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* AI Review Modal Styles */
+.ai-review-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.ai-review-modal {
+  background: var(--bg-surface);
+  border: 1px solid rgba(33, 203, 255, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+  width: 90%;
+  max-width: 700px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: rgba(28, 35, 52, 0.92);
+  border-bottom: 1px solid rgba(33, 203, 255, 0.15);
+}
+
+.modal-header h3 {
+  color: #00e6ff;
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #bfcad6;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-button:hover {
+  color: #ff6bcb;
+}
+
+.modal-content {
+  padding: 20px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.modal-content pre {
+  background: #1e1e1e;
+  color: #bfcad6;
+  padding: 15px;
+  border-radius: 8px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Language selector animation */
+.language-selector select {
+  transition: all 0.3s ease-in-out;
+}
+
+.language-selector select:focus {
+  outline: none;
+  border-color: #00e6ff;
+  box-shadow: 0 0 0 3px rgba(0, 230, 255, 0.3);
+}
+
 /* ===== LOGIN NOTICE ===== */
 .login-notice {
   background: rgba(244, 67, 54, 0.08);

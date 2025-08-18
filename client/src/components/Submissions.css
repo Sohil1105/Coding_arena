@@ -78,3 +78,68 @@
     font-size: 1rem;
   }
 }
+
+/* Styles for new elements in Submissions.js */
+.test-results {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #23304e;
+}
+
+.test-results h4 {
+  color: #21cbff;
+  margin-bottom: 0.8rem;
+  font-size: 1rem;
+}
+
+.test-case-result {
+  background: rgba(19, 26, 42, 0.9);
+  padding: 0.6rem 0.8rem;
+  border-radius: 7px;
+  margin-bottom: 0.5rem;
+  border: 1px solid #23304e;
+}
+
+.test-case-result.passed {
+  background-color: #28a745; /* Green for passed tests */
+  border-color: #28a745;
+}
+
+.test-case-result.failed {
+  background-color: #dc3545; /* Red for failed tests */
+  border-color: #dc3545;
+}
+
+.test-case-result p {
+  margin: 0.2rem 0;
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+.test-error {
+  color: #ffc107; /* Yellow for errors */
+  font-weight: bold;
+}
+
+.submission-code {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #23304e;
+}
+
+.submission-code h4 {
+  color: #21cbff;
+  margin-bottom: 0.8rem;
+  font-size: 1rem;
+}
+
+.submission-code pre {
+  background: rgba(19, 26, 42, 0.9);
+  padding: 0.6rem 0.8rem;
+  border-radius: 7px;
+  border: 1px solid #23304e;
+  overflow-x: auto;
+  white-space: pre-wrap; /* Preserve whitespace and wrap text */
+  word-break: break-all; /* Break long words */
+  color: #fff;
+}

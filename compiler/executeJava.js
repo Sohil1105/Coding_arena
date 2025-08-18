@@ -10,37 +10,40 @@ if (!fs.existsSync(outputPath)) {
 
 // Compiles and executes Java code with given input
 const executeJava = (filepath, inputPath) => {
-  const jobId = path.basename(filepath).split(".")[0]; // This will be the class name
+  const jobId = path.basename(filepath).split(".")[0]; // This will be the class name, e.g., Main
 
   return new Promise((resolve, reject) => {
-    // Compile Java file with javac
-    exec(
-      `javac ${filepath} -d ${outputPath}`, // Compile to the outputs directory
-      (compileError, compileStdout, compileStderr) => {
-        if (compileError) {
-          return reject({ error: compileError, stderr: compileStderr });
-        }
-        if (compileStderr) {
-          // Even if there's stderr, compilation might succeed, but it's good to report warnings
-          // For now, we'll treat it as an error if there's any stderr during compilation
-          // return reject(compileStderr);
-        }
-
-        // Execute Java class with input
-        exec(
-          `java -cp ${outputPath} ${jobId} < ${inputPath}`,
-          (execError, stdout, stderr) => {
-            if (execError) {
-              return reject({ error: execError, stderr });
-            }
-            if (stderr) {
-              return reject(stderr);
-            }
-            resolve(stdout);
-          }
-        );
+    const compileCommand = `javac ${filepath} -d ${outputPath}`;
+    exec(compileCommand, (compileError, compileStdout, compileStderr) => {
+      if (compileError) {
+        // Compilation failed
+        return reject({ error: compileError.message, stderr: compileStderr });
       }
-    );
+      if (compileStderr) {
+        // Compilation warnings or non-fatal errors
+        // We can still proceed to execution, but might want to log this
+        console.warn(`Java compilation warnings/errors for ${jobId}:`, compileStderr);
+      }
+
+      const executeCommand = `java -cp ${outputPath} ${jobId} < ${inputPath}`;
+      exec(executeCommand, (execError, stdout, stderr) => {
+        // Clean up compiled .class files after execution
+        const classFilePath = path.join(outputPath, `${jobId}.class`);
+        fs.unlink(classFilePath, (err) => {
+          if (err) console.error(`Failed to delete ${classFilePath}:`, err);
+        });
+
+        if (execError) {
+          // Execution failed
+          return reject({ error: execError.message, stderr });
+        }
+        if (stderr) {
+          // Runtime errors or messages to stderr
+          return reject({ error: "Runtime Error", stderr });
+        }
+        resolve(stdout);
+      });
+    });
   });
 };
 
