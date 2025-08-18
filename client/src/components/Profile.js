@@ -106,7 +106,7 @@ const Profile = ({ user: loggedInUser }) => {
                 <div className="profile-problems">
                     <h3 className="problem-list-title">Problems Solved ({solvedCount})</h3>
                     <ul className="problem-list">
-                        {solvedProblems.map((problem, index) => (
+                        {solvedProblems.filter(problem => problem).map((problem, index) => (
                             <li key={index} className="problem-item">
                                 <a href={`/problems/${problem._id}`}>{problem.title}</a>
                             </li>
@@ -117,7 +117,7 @@ const Profile = ({ user: loggedInUser }) => {
                 <div className="profile-problems">
                     <h3 className="problem-list-title">Problems Attempted ({attemptedCount})</h3>
                     <ul className="problem-list">
-                        {attemptedProblems.map((problem, index) => (
+                        {attemptedProblems.filter(problem => problem).map((problem, index) => (
                             <li key={index} className="problem-item">
                                 <a href={`/problems/${problem._id}`}>{problem.title}</a>
                             </li>
@@ -128,7 +128,7 @@ const Profile = ({ user: loggedInUser }) => {
                 <div className="profile-problems">
                     <h3 className="problem-list-title">Problems Contributed ({contributedProblems.length})</h3>
                     <ul className="problem-list">
-                        {contributedProblems.map((problem, index) => (
+                        {contributedProblems.filter(problem => problem).map((problem, index) => (
                             <li key={index} className="problem-item">
                                 <a href={`/problems/${problem._id}`}>{problem.title}</a>
                             </li>

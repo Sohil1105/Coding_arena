@@ -64,13 +64,32 @@ app.post("/run", async (req, res) => {
             inputPath, 
             output 
         });
-    } catch (error) {
-        console.error(`Error executing ${language} code:`, error);
+    } catch (err) { // Renamed error to err for clarity
+        console.error(`Error executing ${language} code:`, err);
         
+        let errorMessage = 'An unknown error occurred during code execution.';
+        let stderrOutput = '';
+
+        if (err && typeof err === 'object') {
+            if (err.error) { // This is the error message from exec (e.g., command not found)
+                errorMessage = err.error;
+            }
+            if (err.stderr) { // This is the stderr output from compiler/runtime
+                stderrOutput = err.stderr;
+            }
+        } else if (typeof err === 'string') {
+            errorMessage = err;
+        } else if (err instanceof Error) {
+            errorMessage = err.message;
+        }
+
+        // Combine error message and stderr for a comprehensive output
+        const fullErrorMessage = stderrOutput ? `${errorMessage}\n${stderrOutput}` : errorMessage;
+
         // Send error response with proper error message
         res.status(500).json({ 
             success: false,
-            error: error.message || error.toString() || 'An error occurred while executing the code'
+            error: fullErrorMessage
         });
     }
 });
