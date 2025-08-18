@@ -24,25 +24,21 @@ const ProblemDetail = () => {
   useEffect(() => {
     const fetchProblem = async () => {
       const token = localStorage.getItem('token');
-      if (!token) {
-        setError("Please log in to view the problem details.");
-        return;
-      }
-      const config = {
-        headers: { 'x-auth-token': token }
-      };
+      const config = token ? { headers: { 'x-auth-token': token } } : {}; // Only send token if available
       try {
         const res = await axios.get(`${API_BASE_URL}/api/problems/${id}`, config);
         setProblem(res.data);
+        setError(null); // Clear any previous errors
       } catch (err) {
         console.error('Error fetching problem details:', err);
-        if (err.response) {
-          setError(`Error: ${err.response.data.message || 'Problem not found'}`);
+        if (err.response && err.response.status === 404) {
+          setError('Problem not found.');
         } else if (err.request) {
           setError('Network error. Please check your connection.');
         } else {
-          setError('An unexpected error occurred.');
+          setError('An unexpected error occurred while fetching problem details.');
         }
+        setProblem(null); // Ensure problem is null on error
       }
     };
     fetchProblem();
@@ -201,7 +197,11 @@ const ProblemDetail = () => {
   useEffect(() => {
     const fetchSnippet = async () => {
         const token = localStorage.getItem('token');
-        if (!token || !id) return;
+        if (!token || !id) {
+            // If no token, we can't fetch or save snippets, but still allow viewing problem
+            setCode(getLanguageTemplate(language)); // Set default template
+            return;
+        }
 
         try {
             const res = await axios.get(`${API_BASE_URL}/api/snippets/${id}`, {
@@ -210,7 +210,6 @@ const ProblemDetail = () => {
             setCode(res.data.code);
             setLanguage(res.data.language);
         } catch (err) {
-            // If no snippet is found, set the default template
             if (err.response && err.response.status === 404) {
                 setCode(getLanguageTemplate(language));
             } else {
@@ -223,12 +222,17 @@ const ProblemDetail = () => {
   }, [id, language]);
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return; // Only save snippet if user is logged in
+
     const timer = setTimeout(() => {
         saveSnippet();
     }, 5000); // Save every 5 seconds
 
     return () => clearTimeout(timer);
   }, [code, language, saveSnippet]);
+
+  const isLoggedIn = !!localStorage.getItem('token');
 
   if (error) return <div className="error-message">{error}</div>;
   if (!problem) return <div className="loading">Loading problem details...</div>;
@@ -341,16 +345,22 @@ const ProblemDetail = () => {
 
         <div className="results-panel">
           <div className="button-group">
-            <button onClick={handleSubmit} className="submit-button" disabled={isSubmitting}>
+            <button onClick={handleSubmit} className="submit-button" disabled={isSubmitting || !isLoggedIn}>
               {isSubmitting ? 'Submitting...' : 'Submit Code'}
             </button>
-            <button onClick={runCode} className="run-button" disabled={isRunning}>
+            <button onClick={runCode} className="run-button" disabled={isRunning || !isLoggedIn}>
               {isRunning ? 'Running...' : 'Run Code'}
             </button>
-            <button onClick={handleAiReview} className="ai-review-button" disabled={isReviewing}>
+            <button onClick={handleAiReview} className="ai-review-button" disabled={isReviewing || !isLoggedIn}>
               {isReviewing ? 'Getting Review...' : 'Get AI Review'}
             </button>
           </div>
+
+          {!isLoggedIn && (
+            <div className="login-notice">
+              Please log in to run, submit, or get AI review for your code.
+            </div>
+          )}
 
           <div className="input-output-section">
             <div className="input-section">
@@ -360,6 +370,7 @@ const ProblemDetail = () => {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Enter custom input (optional)..."
                 className="custom-input-editor"
+                disabled={!isLoggedIn}
               />
             </div>
             <div className="output-section">

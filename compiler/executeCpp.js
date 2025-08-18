@@ -14,19 +14,31 @@ const executeCpp = (filepath, inputPath) => {
   const outPath = path.join(outputPath, `${jobId}.out`);
 
   return new Promise((resolve, reject) => {
-    // Compile C++ file with g++ and then execute it with input
-    exec(
-      `g++ ${filepath} -o ${outPath} && cd ${outputPath} && ./${jobId}.out < ${inputPath}`,
-      (error, stdout, stderr) => {
-        if (error) {
-          reject({ error, stderr });
+    const compileCommand = `g++ ${filepath} -o ${outPath}`;
+    exec(compileCommand, (compileError, compileStdout, compileStderr) => {
+      if (compileError) {
+        return reject({ error: compileError.message, stderr: compileStderr });
+      }
+      if (compileStderr) {
+        console.warn(`C++ compilation warnings/errors for ${jobId}:`, compileStderr);
+      }
+
+      const executeCommand = `${outPath} < ${inputPath}`;
+      exec(executeCommand, (execError, stdout, stderr) => {
+        // Clean up compiled executable after execution
+        fs.unlink(outPath, (err) => {
+          if (err) console.error(`Failed to delete ${outPath}:`, err);
+        });
+
+        if (execError) {
+          return reject({ error: execError.message, stderr });
         }
         if (stderr) {
-          reject(stderr);
+          return reject({ error: "Runtime Error", stderr });
         }
         resolve(stdout);
-      }
-    );
+      });
+    });
   });
 };
 

@@ -14,6 +14,12 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (phone.length !== 10 || !/^\d+$/.test(phone)) {
+            toast.error('Phone number must be exactly 10 digits.');
+            return;
+        }
+
         try {
             const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
                 method: 'POST',

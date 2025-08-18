@@ -199,7 +199,7 @@
   margin-bottom: 12px;
 }
 .submit-button,
-.ai-review-button {
+.run-button { /* Apply same style to submit and run buttons */
   flex: 1;
   background: linear-gradient(90deg, #00e6ff 0%, #38b2ac 100%);
   color: #191c24;
@@ -211,12 +211,12 @@
   transition: background 0.25s, transform 0.15s, box-shadow 0.2s;
 }
 .submit-button:hover,
-.ai-review-button:hover {
+.run-button:hover {
   transform: translateY(-1px);
   box-shadow: 0 0 12px #00e6ff80;
 }
 .submit-button:disabled,
-.ai-review-button:disabled {
+.run-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -243,8 +243,13 @@
 }
 
 .ai-review-button {
+  flex: 1; /* Ensure AI review button also takes full width */
   background: linear-gradient(90deg, #21cbff 0%, #00e676 100%);
   color: #121820;
+}
+.ai-review-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px #21cbff80; /* Specific hover for AI review */
 }
 
 /* Custom Input/Output Section */

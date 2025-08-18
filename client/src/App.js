@@ -45,14 +45,11 @@ function App() {
         fetchUser();
     }, []);
 
-    if (loading) {
-        return <Loader />;
-    }
-
     return (
         <BrowserRouter>
             <Navbar user={user} setUser={setUser} />
             <div className="main-container">
+                {loading && <Loader />} {/* Render Loader conditionally */}
                 <Routes>
                     {/* App routes */}
                     <Route path="/" element={<Landing />} />
