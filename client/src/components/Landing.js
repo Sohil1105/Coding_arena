@@ -38,24 +38,6 @@ const Landing = () => {
           <button onClick={handleGetStarted} className="custom-button secondary-btn">Get Started</button>
         </div>
       </div>
-      {/* Contact Section */}
-      <div className="contact-section">
-        <h2>Connect with Me</h2>
-        <div className="contact-links">
-          <a href="https://www.instagram.com/sourav_sohil05/" className="contact-link" target="_blank" rel="noopener noreferrer">
-            <span className="contact-icon">📷</span>
-            <span className="contact-label">Instagram</span>
-          </a>
-          <a href="https://www.linkedin.com/in/kotha-venkata-sourav-sohil-50764b2b0" className="contact-link" target="_blank" rel="noopener noreferrer">
-            <span className="contact-icon">💼</span>
-            <span className="contact-label">LinkedIn</span>
-          </a>
-          <a href="https://github.com/Sohil1105" className="contact-link" target="_blank" rel="noopener noreferrer">
-            <span className="contact-icon">🐙</span>
-            <span className="contact-label">GitHub</span>
-          </a>
-        </div>
-      </div>
     </div>
   );
 };
