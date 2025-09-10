@@ -29,7 +29,11 @@ const Compiler = ({ problemId }) => {
         setOutput('');
 
         try {
-            const response = await axios.post(`${process.env.REACT_APP_COMPILER_URL}/run`, {
+            // Use environment variable for compiler URL, fallback to relative path for production
+            const compilerUrl = process.env.REACT_APP_COMPILER_URL ||
+                (window.location.hostname === 'localhost' ? 'http://localhost:8000' : '/compiler');
+
+            const response = await axios.post(`${compilerUrl}/run`, {
                 language, // Compiler service expects 'language'
                 code,
                 input
@@ -41,7 +45,10 @@ const Compiler = ({ problemId }) => {
                 setError(response.data.error || 'Compilation failed');
             }
         } catch (err) {
-            setError(err.response?.data?.error || 'Failed to compile code');
+            console.error('Compiler error:', err);
+            const errorMessage = err.response?.data?.error ||
+                'Failed to compile code. Please check your connection and try again.';
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }
