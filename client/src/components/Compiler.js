@@ -29,9 +29,20 @@ const Compiler = ({ problemId }) => {
         setOutput('');
 
         try {
-            // Use environment variable for compiler URL, fallback to relative path for production
-            const compilerUrl = process.env.REACT_APP_COMPILER_URL ||
-                (window.location.hostname === 'localhost' ? 'http://localhost:8000' : '/compiler');
+            // Determine compiler URL based on environment
+            let compilerUrl;
+            if (process.env.REACT_APP_COMPILER_URL) {
+                compilerUrl = process.env.REACT_APP_COMPILER_URL;
+            } else if (window.location.hostname === 'localhost') {
+                compilerUrl = 'http://localhost:8000';
+            } else {
+                // For production, construct URL based on current domain
+                const protocol = window.location.protocol;
+                const hostname = window.location.hostname;
+                compilerUrl = `${protocol}//${hostname}/compiler`;
+            }
+
+            console.log('Using compiler URL:', compilerUrl);
 
             const response = await axios.post(`${compilerUrl}/run`, {
                 language, // Compiler service expects 'language'
@@ -47,7 +58,7 @@ const Compiler = ({ problemId }) => {
         } catch (err) {
             console.error('Compiler error:', err);
             const errorMessage = err.response?.data?.error ||
-                'Failed to compile code. Please check your connection and try again.';
+                `Failed to compile code. Please check your connection and try again. (Error: ${err.message})`;
             setError(errorMessage);
         } finally {
             setLoading(false);
@@ -81,10 +92,27 @@ const Compiler = ({ problemId }) => {
         }
     }, [code, language, problemId]);
 
+    // Set initial boilerplate code when component mounts
+    useEffect(() => {
+        setCode(getLanguageTemplate(language));
+    }, []); // Only run once on mount
+
+    // Update boilerplate code when language changes
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token || !problemId) {
+            // Only update if we don't have saved code for this problem
+            setCode(getLanguageTemplate(language));
+        }
+    }, [language]);
+
     useEffect(() => {
         const fetchSnippet = async () => {
             const token = localStorage.getItem('token');
-            if (!token || !problemId) return;
+            if (!token || !problemId) {
+                // If no token or problemId, keep the default boilerplate code
+                return;
+            }
 
             try {
                 const res = await axios.get(`${API_BASE_URL}/api/snippets/${problemId}`, {
@@ -93,9 +121,9 @@ const Compiler = ({ problemId }) => {
                 setCode(res.data.code);
                 setLanguage(res.data.language);
             } catch (err) {
-                // If no snippet is found, set the default template
+                // If no snippet is found, keep the default template
                 if (err.response && err.response.status === 404) {
-                    setCode(getLanguageTemplate(language));
+                    // Keep current boilerplate code
                 } else {
                     console.error('Failed to fetch snippet:', err);
                 }
