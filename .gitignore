@@ -10,3 +10,7 @@ coding arena hld doc.docx
 submission form.pdf
 .vscode/
 keys/*
+.gitignore
+!.gitignore
+.env
+.vscode/
