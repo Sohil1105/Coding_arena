@@ -10,10 +10,22 @@ if (!fs.existsSync(outputPath)) {
 
 // Compiles and executes Java code with given input
 const executeJava = (filepath, inputPath) => {
-  const jobId = path.basename(filepath).split(".")[0]; // This will be the class name, e.g., Main
+  // Read the file to extract the class name
+  const fileContent = fs.readFileSync(filepath, 'utf8');
+  const classMatch = fileContent.match(/public class (\w+)/);
+  if (!classMatch) {
+    return reject({ error: 'No public class found in the Java file' });
+  }
+  const className = classMatch[1];
+
+  // Rename the file to match the class name
+  const newFilePath = path.join(path.dirname(filepath), `${className}.java`);
+  fs.renameSync(filepath, newFilePath);
+
+  const jobId = className;
 
   return new Promise((resolve, reject) => {
-    const compileCommand = `javac ${filepath} -d ${outputPath}`;
+    const compileCommand = `javac ${newFilePath} -d ${outputPath}`;
     exec(compileCommand, (compileError, compileStdout, compileStderr) => {
       if (compileError) {
         // Compilation failed
