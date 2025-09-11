@@ -10,6 +10,10 @@ const axios = require('axios');
 router.post('/', auth, async (req, res) => {
     const { problemId, code, language } = req.body;
 
+    // Set default compiler URL if not provided
+    const compilerUrl = process.env.COMPILER_URL || 'http://localhost:8000';
+    console.log(`Using compiler URL: ${compilerUrl}`);
+
     try {
         // Validate input
         if (!problemId || !code || !language) {
@@ -35,7 +39,7 @@ router.post('/', auth, async (req, res) => {
         if (problem.testCases && problem.testCases.length > 0) {
             for (const [index, testCase] of problem.testCases.entries()) {
                 try {
-                    const compilerResponse = await axios.post(`${process.env.COMPILER_URL}/run`, {
+                    const compilerResponse = await axios.post(`${compilerUrl}/run`, {
                         code,
                         language,
                         input: testCase.input || ''
@@ -80,7 +84,7 @@ router.post('/', auth, async (req, res) => {
         } else {
             // If no test cases, run once without input or with a default empty input
             try {
-                const compilerResponse = await axios.post(`${process.env.COMPILER_URL}/run`, {
+                const compilerResponse = await axios.post(`${compilerUrl}/run`, {
                     code,
                     language,
                     input: ''

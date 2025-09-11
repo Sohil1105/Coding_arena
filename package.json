@@ -8,7 +8,8 @@
     "start": "node server/server.js",
     "server": "nodemon server/server.js",
     "client": "npm start --prefix client",
-    "dev": "npm-run-all --parallel server client",
+    "compiler": "npm start --prefix compiler",
+    "dev": "npm-run-all --parallel server client compiler",
     "seed": "node server/seed.js"
   },
   "author": "",
