@@ -1,0 +1,105 @@
+.compiler-container {
+  font-family: 'Courier New', Courier, monospace;
+  color: #00ffff;
+  background-color: #0f1725;
+  padding: 1rem;
+  border-radius: 8px;
+  max-width: 100%;
+}
+
+.compiler-controls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.language-select {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  border: 1px solid #00ffff;
+  background-color: #1e293b;
+  color: #00ffff;
+}
+
+.run-button {
+  background: linear-gradient(90deg, #00d2ff, #3a47d5);
+  border: none;
+  color: #0f1725;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.run-button:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.run-button:hover:not(:disabled) {
+  background: linear-gradient(90deg, #3a47d5, #00d2ff);
+}
+
+.compiler-layout {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.code-section, .output-section {
+  flex: 1 1 45%;
+  display: flex;
+  flex-direction: column;
+}
+
+.code-section h3, .output-section h3 {
+  color: #00ffff;
+  margin-bottom: 0.5rem;
+}
+
+.code-editor, .input-editor {
+  background-color: #1e293b;
+  color: #00ffff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1rem;
+  border: 1px solid #00ffff;
+  border-radius: 6px;
+  padding: 0.5rem;
+  min-height: 200px;
+  resize: vertical;
+  outline: none;
+}
+
+.code-editor {
+  height: 300px;
+  white-space: pre;
+}
+
+.output-display {
+  background-color: #1e293b;
+  border: 1px solid #00ffff;
+  border-radius: 6px;
+  padding: 0.5rem;
+  min-height: 300px;
+  color: #00ffff;
+  overflow-y: auto;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1rem;
+}
+
+.error-message {
+  color: #ff4d4f;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.output-text {
+  white-space: pre-wrap;
+}
+
+.no-output {
+  color: #94a3b8;
+  font-style: italic;
+}

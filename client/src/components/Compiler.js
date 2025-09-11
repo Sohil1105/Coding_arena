@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import './Compiler.css';
+import '../../compiler/Compiler.css';
 import API_BASE_URL from '../config';
 
 const Compiler = ({ problemId }) => {
@@ -106,11 +106,22 @@ const Compiler = ({ problemId }) => {
         }
     }, [language]);
 
+    // Helper function to validate MongoDB ObjectId format
+    const isValidObjectId = (id) => {
+        return /^[0-9a-fA-F]{24}$/.test(id);
+    };
+
     useEffect(() => {
         const fetchSnippet = async () => {
             const token = localStorage.getItem('token');
             if (!token || !problemId) {
                 // If no token or problemId, keep the default boilerplate code
+                return;
+            }
+
+            // Validate problemId format before fetching
+            if (!isValidObjectId(problemId)) {
+                // Invalid problemId, skip fetching snippet
                 return;
             }
 
@@ -131,7 +142,7 @@ const Compiler = ({ problemId }) => {
         };
 
         fetchSnippet();
-    }, [problemId, language]);
+    }, [problemId]);
 
     useEffect(() => {
         const timer = setTimeout(() => {

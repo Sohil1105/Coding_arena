@@ -8,9 +8,12 @@ import './ProblemDetail.css';
 const ProblemDetail = () => {
   const { id } = useParams();
   const [problem, setProblem] = useState(null);
+  const [problemObjectId, setProblemObjectId] = useState(null);
   const [code, setCode] = useState('');
   const [submissionResult, setSubmissionResult] = useState('');
   const [language, setLanguage] = useState('cpp');
+  const [savedCode, setSavedCode] = useState('');
+  const [savedLanguage, setSavedLanguage] = useState(null);
   const [error, setError] = useState(null);
   const [isReviewing, setIsReviewing] = useState(false);
   const [aiReview, setAiReview] = useState('');
@@ -21,6 +24,21 @@ const ProblemDetail = () => {
   const [isRunning, setIsRunning] = useState(false); // New state for run button loading
   const [showAiReviewModal, setShowAiReviewModal] = useState(false); // New state for AI review modal
 
+  const getLanguageTemplate = useCallback((lang) => {
+    const templates = {
+      'c': '#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}',
+      'cpp': '#include <iostream>\n\nint main() {\n    std::cout << "Hello, World!" << std::endl;\n    return 0;\n}',
+      'java': 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
+      'python': 'print("Hello, World!")'
+    };
+    return templates[lang] || '';
+  }, []);
+
+  // Set initial boilerplate code when component mounts
+  useEffect(() => {
+    setCode(getLanguageTemplate(language));
+  }, []); // Only run once on mount
+
   useEffect(() => {
     const fetchProblem = async () => {
       const token = localStorage.getItem('token');
@@ -28,6 +46,7 @@ const ProblemDetail = () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/api/problems/${id}`, config);
         setProblem(res.data);
+        setProblemObjectId(res.data._id);
         setError(null); // Clear any previous errors
       } catch (err) {
         console.error('Error fetching problem details:', err);
@@ -169,23 +188,15 @@ const ProblemDetail = () => {
     }
   };
 
-  const getLanguageTemplate = (lang) => {
-    const templates = {
-        'c': '#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}',
-        'cpp': '#include <iostream>\n\nint main() {\n    std::cout << "Hello, World!" << std::endl;\n    return 0;\n}',
-        'java': 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
-        'python': 'print("Hello, World!")'
-    };
-    return templates[lang] || '';
-  };
+
 
   const saveSnippet = useCallback(async () => {
     const token = localStorage.getItem('token');
-    if (!token || !id) return;
+    if (!token || !problemObjectId) return;
 
     try {
         await axios.post(`${API_BASE_URL}/api/snippets`, {
-            problemId: id,
+            problemId: problemObjectId,
             code,
             language
         }, {
@@ -194,26 +205,30 @@ const ProblemDetail = () => {
     } catch (err) {
         console.error('Failed to save snippet:', err);
     }
-  }, [code, language, id]);
+  }, [code, language, problemObjectId]);
 
   useEffect(() => {
     const fetchSnippet = async () => {
         const token = localStorage.getItem('token');
-        if (!token || !id) {
-            // If no token, we can't fetch or save snippets, but still allow viewing problem
-            setCode(getLanguageTemplate(language)); // Set default template
+        if (!token || !problemObjectId) {
+            // If no token or problemObjectId, we can't fetch or save snippets, but still allow viewing problem
+            setSavedLanguage(null);
             return;
         }
 
         try {
-            const res = await axios.get(`${API_BASE_URL}/api/snippets/${id}`, {
+            // Use problemObjectId as string for URL
+            const res = await axios.get(`${API_BASE_URL}/api/snippets/${problemObjectId.toString()}`, {
                 headers: { 'x-auth-token': token }
             });
             setCode(res.data.code);
             setLanguage(res.data.language);
+            setSavedLanguage(res.data.language);
+            setSavedCode(res.data.code);
         } catch (err) {
             if (err.response && err.response.status === 404) {
-                setCode(getLanguageTemplate(language));
+                setSavedLanguage(null);
+                setSavedCode('');
             } else {
                 console.error('Failed to fetch snippet:', err);
             }
@@ -221,7 +236,18 @@ const ProblemDetail = () => {
     };
 
     fetchSnippet();
-  }, [id, language]);
+  }, [problemObjectId, getLanguageTemplate]);
+
+  // Handle language change
+  useEffect(() => {
+    if (savedLanguage === language) {
+      // If language matches saved snippet language, restore saved code
+      setCode(savedCode);
+    } else {
+      // Otherwise, show template for selected language
+      setCode(getLanguageTemplate(language));
+    }
+  }, [language, savedLanguage, savedCode, getLanguageTemplate]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -232,7 +258,7 @@ const ProblemDetail = () => {
     }, 5000); // Save every 5 seconds
 
     return () => clearTimeout(timer);
-  }, [code, language, saveSnippet]);
+  }, [code, language, saveSnippet, getLanguageTemplate]);
 
   const isLoggedIn = !!localStorage.getItem('token');
 

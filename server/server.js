@@ -12,8 +12,9 @@ const aiRoutes = require('./ai');
 const seedAll = require('./seedAll');
 
 const app = express();
+// Enable CORS for frontend localhost:3001 for development
 app.use(cors({
-    origin: [process.env.CLIENT_URL],
+    origin: [process.env.CLIENT_URL, 'http://localhost:3001'],
     credentials: true
 }));
 app.use(express.json());
