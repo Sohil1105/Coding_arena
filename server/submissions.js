@@ -134,24 +134,35 @@ router.post('/', auth, async (req, res) => {
 
         if (allTestsPassed) {
             const user = await User.findById(req.user.id);
-            if (user && !user.solvedProblems.includes(problem._id)) {
-                user.solvedProblems.push(problem._id);
-                let scoreToAdd = 0;
-                switch (problem.difficulty) {
-                    case 'Easy':
-                        scoreToAdd = 10;
-                        break;
-                    case 'Medium':
-                        scoreToAdd = 20;
-                        break;
-                    case 'Hard':
-                        scoreToAdd = 30;
-                        break;
-                    default:
-                        scoreToAdd = 10;
+            if (user) {
+                if (user.solvedProblems.includes(problem._id)) {
+                    // Problem already solved, notify user
+                    return res.json({
+                        success: false,
+                        message: 'Problem already solved. Score not added again.',
+                        output: overallOutput,
+                        testResults: testResults,
+                        submission: newSubmission
+                    });
+                } else {
+                    user.solvedProblems.push(problem._id);
+                    let scoreToAdd = 0;
+                    switch (problem.difficulty) {
+                        case 'Easy':
+                            scoreToAdd = 10;
+                            break;
+                        case 'Medium':
+                            scoreToAdd = 20;
+                            break;
+                        case 'Hard':
+                            scoreToAdd = 30;
+                            break;
+                        default:
+                            scoreToAdd = 10;
+                    }
+                    user.score += scoreToAdd;
+                    await user.save();
                 }
-                user.score += scoreToAdd;
-                await user.save();
             }
         }
 

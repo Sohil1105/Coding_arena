@@ -155,11 +155,19 @@ router.get('/:id/profile', auth, async (req, res) => {
         // Get submissions
         const submissions = await Submission.find({ userId: userId }).populate('problemId', '_id title'); // Populate with _id and title
         
-        const attemptedProblems = new Set();
+        const attemptedProblemIds = new Set();
+        const attemptedProblems = [];
+
         submissions.forEach(sub => {
-            // Ensure problemId exists and is populated before accessing its properties
             if (sub.problemId && !user.solvedProblems.some(p => p._id.equals(sub.problemId._id))) {
-                attemptedProblems.add(sub.problemId);
+                const problemIdStr = sub.problemId._id.toString();
+                if (!attemptedProblemIds.has(problemIdStr)) {
+                    attemptedProblemIds.add(problemIdStr);
+                    attemptedProblems.push({
+                        _id: sub.problemId._id,
+                        title: sub.problemId.title
+                    });
+                }
             }
         });
 
@@ -167,9 +175,9 @@ router.get('/:id/profile', auth, async (req, res) => {
             user,
             contributedProblems,
             solvedProblems: user.solvedProblems,
-            attemptedProblems: Array.from(attemptedProblems),
+            attemptedProblems: attemptedProblems,
             solvedCount: user.solvedProblems.length,
-            attemptedCount: attemptedProblems.size,
+            attemptedCount: attemptedProblems.length,
         });
 
     } catch (err) {

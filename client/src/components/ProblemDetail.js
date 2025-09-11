@@ -37,7 +37,7 @@ const ProblemDetail = () => {
   // Set initial boilerplate code when component mounts
   useEffect(() => {
     setCode(getLanguageTemplate(language));
-  }, []); // Only run once on mount
+  }, [getLanguageTemplate, language]); // Added missing dependencies to fix warning
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -113,6 +113,9 @@ const ProblemDetail = () => {
               setSubmissionResult(outputData || 'Code executed successfully');
             }
           } else {
+            if (res.data.message === 'Problem already solved. Score not added again.') {
+              alert('You have already solved this problem. Score will not be added again.');
+            }
             setSubmissionResult(res.data.output || res.data.message || 'Submission failed');
           }
         } catch (err) {
@@ -249,6 +252,14 @@ const ProblemDetail = () => {
     }
   }, [language, savedLanguage, savedCode, getLanguageTemplate]);
 
+  // Clear error after 5 seconds automatically
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+  
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) return; // Only save snippet if user is logged in
@@ -262,7 +273,6 @@ const ProblemDetail = () => {
 
   const isLoggedIn = !!localStorage.getItem('token');
 
-  if (error) return <div className="error-message">{error}</div>;
   if (!problem) return <div className="loading">Loading problem details...</div>;
 
   return (
@@ -281,6 +291,8 @@ const ProblemDetail = () => {
             </div>
           </div>
         </div>
+
+        {error && <div className="error-message">{error}</div>}
 
         <div className="problem-tabs">
           <button
