@@ -113,10 +113,12 @@ const ProblemDetail = () => {
               setSubmissionResult(outputData || 'Code executed successfully');
             }
           } else {
-            if (res.data.message === 'Problem already solved. Score not added again.') {
-              alert('You have already solved this problem. Score will not be added again.');
+            if (res.data.message === 'Already Solved and submitted') {
+              setSubmissionResult(res.data.message + '\n\n' + (res.data.output || ''));
+            } else {
+              // For other failures, show the message
+              setSubmissionResult(res.data.output || res.data.message || 'Submission failed');
             }
-            setSubmissionResult(res.data.output || res.data.message || 'Submission failed');
           }
         } catch (err) {
           setError('Error submitting code. Please try again.');

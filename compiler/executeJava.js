@@ -37,6 +37,11 @@ const executeJava = (filepath, inputPath) => {
         console.warn(`Java compilation warnings/errors for ${jobId}:`, compileStderr);
       }
 
+      // Check if input file has content
+      if (fs.statSync(inputPath).size === 0) {
+        return reject({ error: 'Input required but not provided', stderr: 'Please provide input for the Java program.' });
+      }
+
       const executeCommand = `java -cp ${outputPath} ${jobId} < ${inputPath}`;
       exec(executeCommand, (execError, stdout, stderr) => {
         // Clean up compiled .class files after execution

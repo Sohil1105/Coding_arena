@@ -1,5 +1,16 @@
 # Docker Compose for Coding Arena
 services:
+  # MongoDB database
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app-network
+    restart: unless-stopped
+
   # Node.js/Express backend
   backend:
     build:
@@ -12,7 +23,9 @@ services:
     environment:
       - NODE_ENV=development
       - COMPILER_URL=http://compiler:8000
+      - MONGO_URL=mongodb://mongodb:27017/codingarena
     depends_on:
+      - mongodb
       - compiler
     command: ["node", "server.js"]
     networks:
@@ -78,5 +91,6 @@ networks:
     driver: bridge
 
 volumes:
+  mongodb_data:
   compiler-codes:
   compiler-outputs:

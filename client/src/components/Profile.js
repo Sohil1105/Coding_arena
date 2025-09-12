@@ -70,7 +70,7 @@ const Profile = ({ user: loggedInUser }) => {
         return <div>User not found</div>;
     }
 
-    const { user, contributedProblems, solvedProblems, attemptedProblems, solvedCount, attemptedCount } = profileData;
+    const { user, contributedProblems, solvedCount, attemptedCount } = profileData;
 
     const handleSettingsClick = () => {
         // Ensure we navigate to the correct user ID for settings
@@ -117,37 +117,18 @@ const Profile = ({ user: loggedInUser }) => {
                 </div>
 
                 <div className="profile-problems">
-                    <h3 className="problem-list-title">Problems Solved ({solvedCount})</h3>
-                    <ul className="problem-list">
-                        {solvedProblems.filter(problem => problem).map((problem) => (
-                            <li key={problem._id} className="problem-item">
-                                <a href={`/problems/${problem._id}`}>{problem.title}</a>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                <div className="profile-problems">
-                    <h3 className="problem-list-title">Problems Attempted ({attemptedCount})</h3>
-                    <ul className="problem-list">
-                        {attemptedProblems.filter(problem => problem).map((problem) => (
-                            <li key={problem._id} className="problem-item">
-                                <a href={`/problems/${problem._id}`}>{problem.title}</a>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                <div className="profile-problems">
-                    <h3 className="problem-list-title">Problems Contributed ({contributedProblems.length})</h3>
+                    <h3 className="problem-list-title">
+                            Problems Contributed ({contributedProblems.length})
+                    </h3>
                     <ul className="problem-list">
                         {contributedProblems.filter(problem => problem).map((problem, index) => (
-                            <li key={index} className="problem-item">
-                                <a href={`/problems/${problem._id}`}>{problem.title}</a>
-                            </li>
+                        <li key={index} className="problem-item">
+                            {problem.title}
+                        </li>
                         ))}
                     </ul>
                 </div>
+
             </div>
         </div>
     );

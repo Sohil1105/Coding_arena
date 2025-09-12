@@ -143,9 +143,13 @@ router.post('/', auth, async (req, res) => {
                 scoreAdded = true;
                 try {
                     await user.save();
+                    console.log(`User ${user._id} solved problem ${problem._id}, score increased by ${scoreToAdd} to ${user.score}`);
                 } catch (saveErr) {
                     console.error('Error saving user after solving problem:', saveErr);
                     scoreAdded = false; // If save failed, consider score not added
+                    // Revert changes if save failed
+                    user.solvedProblems.pop();
+                    user.score -= scoreToAdd;
                 }
             }
         }
@@ -157,7 +161,7 @@ router.post('/', auth, async (req, res) => {
             language,
             output: overallOutput,
             userId: req.user.id,
-            status: allTestsPassed ? (scoreAdded ? 'Accepted' : 'Accepted (Already Solved)') : 'Failed',
+            status: allTestsPassed ? 'Accepted' : 'Failed',
             testResults: testResults,
             submittedAt: new Date()
         });
@@ -166,8 +170,8 @@ router.post('/', auth, async (req, res) => {
 
         if (allTestsPassed && !scoreAdded) {
             return res.json({
-                success: false,
-                message: 'Problem already solved. Score not added again.',
+                success: true,
+                message: 'Already Solved and submitted',
                 output: overallOutput,
                 testResults: testResults,
                 submission: newSubmission
