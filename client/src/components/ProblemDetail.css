@@ -9,7 +9,6 @@
 .problem-detail-page {
   display: flex;
   height: calc(100vh - 60px);
-  background: radial-gradient(ellipse at center, var(--bg-surface) 0%, var(--bg-dark) 100%);
   color: var(--text-main);
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -19,7 +18,6 @@
   flex: 1;
   padding: 20px 26px;
   overflow-y: auto;
-  background: var(--bg-surface);
   border-right: 1px solid rgba(33, 203, 255, 0.15);
   backdrop-filter: blur(5px);
 }

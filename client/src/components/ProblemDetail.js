@@ -302,12 +302,7 @@ const ProblemDetail = () => {
             Description
           </button>
           {/* Removed Solutions tab button as per request */}
-          <button
-            className={`tab-button ${activeTab === 'submissions' ? 'active' : ''}`}
-            onClick={() => setActiveTab('submissions')}
-          >
-            Submissions
-          </button>
+          
         </div>
 
         <div className="problem-content">
@@ -349,8 +344,6 @@ const ProblemDetail = () => {
               )}
             </>
           )}
-
-          {activeTab === 'submissions' && <p>Your submission history will appear here.</p>}
         </div>
       </div>
 

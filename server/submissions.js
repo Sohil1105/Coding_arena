@@ -118,6 +118,38 @@ router.post('/', auth, async (req, res) => {
             }
         }
 
+        const user = await User.findById(req.user.id);
+        let scoreAdded = false;
+        if (user && allTestsPassed) {
+            if (user.solvedProblems.includes(problem._id)) {
+                // Problem already solved, do not add score
+            } else {
+                user.solvedProblems.push(problem._id);
+                let scoreToAdd = 0;
+                switch (problem.difficulty) {
+                    case 'Easy':
+                        scoreToAdd = 10;
+                        break;
+                    case 'Medium':
+                        scoreToAdd = 20;
+                        break;
+                    case 'Hard':
+                        scoreToAdd = 30;
+                        break;
+                    default:
+                        scoreToAdd = 10;
+                }
+                user.score += scoreToAdd;
+                scoreAdded = true;
+                try {
+                    await user.save();
+                } catch (saveErr) {
+                    console.error('Error saving user after solving problem:', saveErr);
+                    scoreAdded = false; // If save failed, consider score not added
+                }
+            }
+        }
+
         // Create submission record
         const newSubmission = new Submission({
             problemId: problem._id,
@@ -125,49 +157,21 @@ router.post('/', auth, async (req, res) => {
             language,
             output: overallOutput,
             userId: req.user.id,
-            status: allTestsPassed ? 'Accepted' : 'Failed',
+            status: allTestsPassed ? (scoreAdded ? 'Accepted' : 'Accepted (Already Solved)') : 'Failed',
             testResults: testResults,
             submittedAt: new Date()
         });
 
         await newSubmission.save();
 
-        const user = await User.findById(req.user.id);
-        if (user) {
-            if (allTestsPassed) {
-                if (user.solvedProblems.includes(problem._id)) {
-                    // Problem already solved, notify user
-                    return res.json({
-                        success: false,
-                        message: 'Problem already solved. Score not added again.',
-                        output: overallOutput,
-                        testResults: testResults,
-                        submission: newSubmission
-                    });
-                } else {
-                    user.solvedProblems.push(problem._id);
-                    let scoreToAdd = 0;
-                    switch (problem.difficulty) {
-                        case 'Easy':
-                            scoreToAdd = 10;
-                            break;
-                        case 'Medium':
-                            scoreToAdd = 20;
-                            break;
-                        case 'Hard':
-                            scoreToAdd = 30;
-                            break;
-                        default:
-                            scoreToAdd = 10;
-                    }
-                    user.score += scoreToAdd;
-                    try {
-                        await user.save();
-                    } catch (saveErr) {
-                        console.error('Error saving user after solving problem:', saveErr);
-                    }
-                }
-            }
+        if (allTestsPassed && !scoreAdded) {
+            return res.json({
+                success: false,
+                message: 'Problem already solved. Score not added again.',
+                output: overallOutput,
+                testResults: testResults,
+                submission: newSubmission
+            });
         }
 
         res.json({
@@ -198,11 +202,24 @@ router.post('/', auth, async (req, res) => {
 });
 
 // Get user submissions
+const mongoose = require('mongoose');
+
 router.get('/user/:userId', auth, async (req, res) => {
     try {
-        const submissions = await Submission.find({ userId: req.params.userId })
+        let userId = req.params.userId;
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ success: false, message: 'Invalid user ID' });
+        }
+        userId = mongoose.Types.ObjectId(userId);
+
+        const submissions = await Submission.find({ userId: userId })
             .populate('problemId', 'title id')
             .sort({ submittedAt: -1 });
+
+        console.log('Submissions fetched for user:', userId);
+        submissions.forEach(sub => {
+            console.log(`Submission: problemId=${sub.problemId ? sub.problemId.title : 'Unknown'}, code length=${sub.code ? sub.code.length : 0}`);
+        });
 
         const formattedSubmissions = submissions.map(submission => ({
             ...submission.toObject(),

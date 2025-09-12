@@ -5,30 +5,42 @@ import './Submissions.css';
 import API_BASE_URL from '../config';
 import Loader from './Loader'; // Import Loader
 
-const Submissions = () => {
-    const { id } = useParams(); // User ID
+const Submissions = ({ refreshKey }) => {
+    const { id } = useParams(); // User ID from route param
     const [submissions, setSubmissions] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchSubmissions = async () => {
             const token = localStorage.getItem('token');
+            if (!token) {
+                setLoading(false);
+                return;
+            }
             const config = {
                 headers: {
                     'x-auth-token': token
                 }
             };
             try {
-                const res = await axios.get(`${API_BASE_URL}/api/submissions/user/${id}`, config);
+                let userId = id;
+                if (!userId) {
+                    // If no id param, fetch current user info to get userId
+                    const userRes = await axios.get(`${API_BASE_URL}/api/auth/me`, config);
+                    userId = userRes.data.id || userRes.data._id;
+                }
+                const res = await axios.get(`${API_BASE_URL}/api/submissions/user/${userId}`, config);
+                console.log('Submissions fetched:', res.data);
                 setSubmissions(res.data);
             } catch (err) {
-                console.error(err);
+                console.error('Error fetching submissions:', err);
             } finally {
                 setLoading(false);
             }
         };
         fetchSubmissions();
-    }, [id]);
+    }, [id, refreshKey]);
+
 
     if (loading) {
         return <Loader />;
