@@ -9,6 +9,9 @@ const Register = () => {
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [otp, setOtp] = useState('');
+    const [showOtpField, setShowOtpField] = useState(false);
+    const [verified, setVerified] = useState(false);
     const navigate = useNavigate();
 
 
@@ -77,15 +80,93 @@ const Register = () => {
                     </div>
                     <div className="form-group">
                         <label htmlFor="email">Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            placeholder="Enter your email"
-                        />
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <input
+                                type="email"
+                                id="email"
+                                value={email}
+                                onChange={(e) => {
+                                    setEmail(e.target.value);
+                                    setVerified(false);
+                                    setShowOtpField(false);
+                                }}
+                                required
+                                placeholder="Enter your email"
+                                style={{ flex: 1 }}
+                            />
+                            <button
+                                type="button"
+                                className="verify-btn"
+                                onClick={async () => {
+                                    if (!email) {
+                                        toast.error('Please enter an email first');
+                                        return;
+                                    }
+                                    try {
+                                        const response = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ email }),
+                                        });
+                                        const data = await response.json();
+                                        if (response.ok) {
+                                            toast.success('OTP sent to your email');
+                                            setShowOtpField(true);
+                                        } else {
+                                            toast.error(data.msg || 'Failed to send OTP');
+                                        }
+                                    } catch (error) {
+                                        toast.error('Error sending OTP');
+                                    }
+                                }}
+                                disabled={verified}
+                                style={{ marginLeft: '8px' }}
+                            >
+                                {verified ? 'Verified' : 'Verify'}
+                            </button>
+                        </div>
                     </div>
+                    {showOtpField && !verified && (
+                        <div className="form-group">
+                            <label htmlFor="otp">Enter OTP</label>
+                            <input
+                                type="text"
+                                id="otp"
+                                value={otp}
+                                onChange={(e) => setOtp(e.target.value)}
+                                placeholder="Enter OTP"
+                            />
+                            <button
+                                type="button"
+                                className="verify-btn"
+                                onClick={async () => {
+                                    if (!otp) {
+                                        toast.error('Please enter the OTP');
+                                        return;
+                                    }
+                                    try {
+                                        const response = await fetch(`${API_BASE_URL}/api/auth/verify-otp`, {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ email, otp }),
+                                        });
+                                        const data = await response.json();
+                                        if (response.ok) {
+                                            toast.success('Email verified successfully');
+                                            setVerified(true);
+                                            setShowOtpField(false);
+                                        } else {
+                                            toast.error(data.msg || 'Invalid OTP');
+                                        }
+                                    } catch (error) {
+                                        toast.error('Error verifying OTP');
+                                    }
+                                }}
+                            >
+                                Verify OTP
+                            </button>
+                        </div>
+                    )}
                     <div className="form-group">
                         <label htmlFor="password">Password</label>
                         <input
@@ -97,7 +178,9 @@ const Register = () => {
                             placeholder="Create a password"
                         />
                     </div>
-                    <button type="submit" className="register-btn">CREATE ACCOUNT</button>
+                    <button type="submit" className="register-btn" disabled={!verified}>
+                        CREATE ACCOUNT
+                    </button>
                 </form>
                 <div className="login-link">
                     <p>Already have an account? <Link to="/login">Sign In</Link></p>

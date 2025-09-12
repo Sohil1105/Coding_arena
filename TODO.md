@@ -1,0 +1,6 @@
+- [x] Create OTP model in server/models/otp.js
+- [x] Add /api/auth/send-otp endpoint in server/auth.js
+- [x] Add /api/auth/verify-otp endpoint in server/auth.js
+- [x] Update register.js to add verify button, OTP input field, and verification logic
+- [x] Update register.css for new UI elements
+- [ ] Test the email verification flow

@@ -79,6 +79,31 @@
     filter: brightness(1.1);
 }
 
+.register-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.verify-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #1967d2, #21cbff);
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.verify-btn:hover {
+    filter: brightness(1.1);
+}
+
+.verify-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .login-link {
     margin-top: 1rem;
     color: #ccc;
