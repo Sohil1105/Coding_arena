@@ -5,7 +5,7 @@ import API_BASE_URL from '../config';
 import Editor from '@monaco-editor/react';
 import './ProblemDetail.css';
 
-const ProblemDetail = () => {
+const ProblemDetail = ({ fetchUser }) => {
   const { id } = useParams();
   const [problem, setProblem] = useState(null);
   const [problemObjectId, setProblemObjectId] = useState(null);
@@ -93,9 +93,14 @@ const ProblemDetail = () => {
           });
 
           if (res.data.success) {
+            // Refetch user data to update solved count and score
+            if (fetchUser) {
+              fetchUser();
+            }
+
             const outputData = res.data.output;
             const testResults = res.data.testResults || [];
-            
+
             if (testResults.length > 0) {
               let formattedOutput = `${outputData}\n\nTest Case Results:\n`;
               testResults.forEach((test, index) => {

@@ -26,22 +26,26 @@ function App() {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const res = await axios.get(`${API_BASE_URL}/api/auth/me`, {
-                        headers: { 'x-auth-token': token }
-                    });
-                    setUser(res.data);
-                } catch (error) {
-                    console.error('Failed to fetch user', error);
-                    localStorage.removeItem('token');
-                }
+    const fetchUser = async () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const res = await axios.get(`${API_BASE_URL}/api/auth/me`, {
+                    headers: { 'x-auth-token': token }
+                });
+                setUser(res.data);
+            } catch (error) {
+                console.error('Failed to fetch user', error);
+                localStorage.removeItem('token');
+                setUser(null);
             }
-            setLoading(false);
-        };
+        } else {
+            setUser(null);
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
         fetchUser();
     }, []);
 
@@ -58,7 +62,7 @@ function App() {
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/reset-password/:token" element={<ResetPassword />} />
                     <Route path="/problems" element={<Dashboard />} />
-                    <Route path="/problem/:id" element={<ProblemDetail />} />
+                    <Route path="/problem/:id" element={<ProblemDetail fetchUser={fetchUser} />} />
                     <Route path="/contribute" element={<ProtectedRoute><Contribute /></ProtectedRoute>} />
                     <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
                     <Route path="/edit-problem/:id" element={<ProtectedRoute><EditProblem /></ProtectedRoute>} />

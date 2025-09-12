@@ -119,10 +119,30 @@ router.post('/', auth, async (req, res) => {
         }
 
         const user = await User.findById(req.user.id);
-        let scoreAdded = false;
         if (user && allTestsPassed) {
-            if (user.solvedProblems.includes(problem._id)) {
+            if (user.solvedProblems.some(p => p.equals(problem._id))) {
                 // Problem already solved, do not add score
+                // Create submission record
+                const newSubmission = new Submission({
+                    problemId: problem._id,
+                    code,
+                    language,
+                    output: overallOutput,
+                    userId: req.user.id,
+                    status: 'Accepted',
+                    testResults: testResults,
+                    submittedAt: new Date()
+                });
+
+                await newSubmission.save();
+
+                return res.json({
+                    success: true,
+                    message: 'Already Solved and submitted',
+                    output: overallOutput,
+                    testResults: testResults,
+                    submission: newSubmission
+                });
             } else {
                 user.solvedProblems.push(problem._id);
                 let scoreToAdd = 0;
@@ -140,50 +160,67 @@ router.post('/', auth, async (req, res) => {
                         scoreToAdd = 10;
                 }
                 user.score += scoreToAdd;
-                scoreAdded = true;
+                user.markModified('solvedProblems');
+                user.markModified('score');
                 try {
                     await user.save();
                     console.log(`User ${user._id} solved problem ${problem._id}, score increased by ${scoreToAdd} to ${user.score}`);
+
+                    // Create submission record
+                    const newSubmission = new Submission({
+                        problemId: problem._id,
+                        code,
+                        language,
+                        output: overallOutput,
+                        userId: req.user.id,
+                        status: 'Accepted',
+                        testResults: testResults,
+                        submittedAt: new Date()
+                    });
+
+                    await newSubmission.save();
+
+                    res.json({
+                        success: true,
+                        output: overallOutput,
+                        testResults: testResults,
+                        submission: newSubmission
+                    });
                 } catch (saveErr) {
                     console.error('Error saving user after solving problem:', saveErr);
-                    scoreAdded = false; // If save failed, consider score not added
                     // Revert changes if save failed
                     user.solvedProblems.pop();
                     user.score -= scoreToAdd;
+                    res.status(500).json({
+                        success: false,
+                        message: 'Failed to save progress. Please try again.',
+                        output: overallOutput,
+                        testResults: testResults
+                    });
                 }
             }
-        }
+        } else {
+            // Create submission record for failed or no user
+            const newSubmission = new Submission({
+                problemId: problem._id,
+                code,
+                language,
+                output: overallOutput,
+                userId: req.user.id,
+                status: allTestsPassed ? 'Accepted' : 'Failed',
+                testResults: testResults,
+                submittedAt: new Date()
+            });
 
-        // Create submission record
-        const newSubmission = new Submission({
-            problemId: problem._id,
-            code,
-            language,
-            output: overallOutput,
-            userId: req.user.id,
-            status: allTestsPassed ? 'Accepted' : 'Failed',
-            testResults: testResults,
-            submittedAt: new Date()
-        });
+            await newSubmission.save();
 
-        await newSubmission.save();
-
-        if (allTestsPassed && !scoreAdded) {
-            return res.json({
-                success: true,
-                message: 'Already Solved and submitted',
+            res.json({
+                success: allTestsPassed,
                 output: overallOutput,
                 testResults: testResults,
                 submission: newSubmission
             });
         }
-
-        res.json({
-            success: allTestsPassed,
-            output: overallOutput,
-            testResults: testResults,
-            submission: newSubmission
-        });
 
     } catch (err) {
         console.error('Submission POST error:', err);
