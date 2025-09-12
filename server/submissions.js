@@ -132,9 +132,9 @@ router.post('/', auth, async (req, res) => {
 
         await newSubmission.save();
 
-        if (allTestsPassed) {
-            const user = await User.findById(req.user.id);
-            if (user) {
+        const user = await User.findById(req.user.id);
+        if (user) {
+            if (allTestsPassed) {
                 if (user.solvedProblems.includes(problem._id)) {
                     // Problem already solved, notify user
                     return res.json({
@@ -161,7 +161,11 @@ router.post('/', auth, async (req, res) => {
                             scoreToAdd = 10;
                     }
                     user.score += scoreToAdd;
-                    await user.save();
+                    try {
+                        await user.save();
+                    } catch (saveErr) {
+                        console.error('Error saving user after solving problem:', saveErr);
+                    }
                 }
             }
         }
