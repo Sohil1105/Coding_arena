@@ -14,12 +14,150 @@
     box-shadow: 0 6px 28px rgba(33, 203, 255, 0.08);
     border: 1px solid #4a5568;
     padding: 2rem;
+}
+
+/* --- Header --- */
+.settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+
+
+.settings-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+    color: #38b2ac;
+}
+
+/* --- Form Layout --- */
+.settings-form {
+    text-align: left;
+    margin-top: 1rem;
+}
+
+.section {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border: 1px solid #4a5568;
+    border-radius: 8px;
+    background: #1a202c;
+}
+
+.section h2 {
+    margin-bottom: 1rem;
+    color: #38b2ac;
+    font-size: 1.2rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #4a5568;
+    border-radius: 6px;
+    background: #2d3748;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #38b2ac;
+}
+
+.profile-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-top: 0.5rem;
+}
+
+/* --- Buttons --- */
+.change-password-btn,
+.delete-account-btn,
+.save-changes-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Primary: Save Changes */
+.save-changes-btn {
+    background: #38a169;
+    color: #fff;
+}
+.save-changes-btn:hover {
+    background: #2f855a;
+}
+
+/* Secondary: Delete Account */
+.delete-account-btn {
+    background: #e53e3e;
+    color: #fff;
+}
+.delete-account-btn:hover {
+    background: #c53030;
+}
+
+/* Secondary: Change Password */
+.change-password-btn {
+    background: #3182ce;
+    color: #fff;
+}
+.change-password-btn:hover {
+    background: #2c5282;
+}
+
+/* --- Action Buttons Row --- */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    gap: 1rem;
+}
+
+.form-actions button {
+    width: auto;
+    min-width: 150px;
+}
+
+/* --- Messages & Warnings --- */
+.message {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: 6px;
+    background: #38a169;
+    color: #fff;
     text-align: center;
 }
 
-.settings-title {
-    font-size: 1.6rem;
-    font-weight: 700;
-    margin-bottom: 0.25rem;
-    color: #38b2ac;
+.warning {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid #e53e3e;
+    border-radius: 6px;
+    background: #2d1a1a;
+    color: #fc8181;
+}
+
+.warning p {
+    margin: 0.5rem 0;
 }

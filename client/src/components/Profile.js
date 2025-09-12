@@ -73,9 +73,7 @@ const Profile = ({ user: loggedInUser }) => {
     const { user, contributedProblems, solvedCount, attemptedCount } = profileData;
 
     const handleSettingsClick = () => {
-        // Ensure we navigate to the correct user ID for settings
-        const settingsId = loggedInUser ? loggedInUser.id : paramId;
-        navigate(`/settings/${settingsId}`);
+        navigate('/settings');
     };
 
     const capitalizeFirstLetter = (string) => {

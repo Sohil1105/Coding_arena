@@ -14,10 +14,11 @@ const seedAll = require('./seedAll');
 const app = express();
 // Enable CORS for frontend localhost:3001 for development
 app.use(cors({
-    origin: [process.env.CLIENT_URL, 'http://localhost:3001'],
+    origin: [process.env.CLIENT_URL, 'http://localhost:3000'],
     credentials: true
 }));
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
 // Environment configuration removed
 

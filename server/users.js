@@ -3,10 +3,38 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const multer = require('multer');
+const path = require('path');
 const User = require('./models/user');
 const Problem = require('./models/problem');
 const Submission = require('./models/submission');
 const auth = require('./middleware/auth');
+
+// Configure multer for profile picture upload
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${req.user.id}_${Date.now()}${path.extname(file.originalname)}`);
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    fileFilter: (req, file, cb) => {
+        const filetypes = /jpeg|jpg|png/;
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = filetypes.test(file.mimetype);
+
+        if (mimetype && extname) {
+            return cb(null, true);
+        } else {
+            cb(new Error('Only JPG, JPEG, and PNG files are allowed'));
+        }
+    }
+});
 
 // Login user
 router.post('/login', async (req, res) => {
@@ -182,6 +210,71 @@ router.get('/:id/profile', auth, async (req, res) => {
 
     } catch (err) {
         console.error('Error fetching profile data:', err);
+        res.status(500).send('Server Error');
+    }
+});
+
+// Update user profile
+router.patch('/profile', auth, upload.single('profilePicture'), async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        const { name, email, phone } = req.body;
+
+        if (name) user.name = name;
+        if (email) user.email = email;
+        if (phone) user.phone = phone;
+
+        if (req.file) {
+            user.profilePicture = req.file.filename;
+        }
+
+        await user.save();
+
+        res.json({ msg: 'Profile updated successfully', user });
+    } catch (err) {
+        console.error('Error updating profile:', err);
+        res.status(500).send('Server Error');
+    }
+});
+
+// Change password
+router.patch('/change-password', auth, async (req, res) => {
+    try {
+        const { newPassword } = req.body;
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(newPassword, salt);
+        await user.save();
+
+        res.json({ msg: 'Password changed successfully' });
+    } catch (err) {
+        console.error('Error changing password:', err);
+        res.status(500).send('Server Error');
+    }
+});
+
+// Delete account request
+router.delete('/delete-account', auth, async (req, res) => {
+    try {
+        // Here, simulate sending deletion request to admin
+        // Actual deletion process would be handled asynchronously by admin approval
+
+        // Log out user by clearing token on client side (frontend should handle this)
+
+        res.json({
+            msg: 'Account deletion request sent to admin. Deleting your account will take 15–30 days. You will receive a confirmation email.'
+        });
+    } catch (err) {
+        console.error('Error requesting account deletion:', err);
         res.status(500).send('Server Error');
     }
 });

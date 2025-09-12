@@ -148,28 +148,23 @@ router.post('/send-otp', async (req, res) => {
             { upsert: true }
         );
 
-        // For testing, log OTP to console instead of sending email
-        console.log(`OTP for ${email}: ${otp}`);
-
-        // Uncomment below for actual email sending
-        /*
+        // Send email
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
+                user: 'souravsohil1111@gmail.com',
+                pass: 'rhtjabtjdkpeflje'
             }
         });
 
         const mailOptions = {
-            from: process.env.EMAIL_USER,
+            from: 'souravsohil1111@gmail.com',
             to: email,
             subject: 'Email Verification OTP',
             text: `Your OTP for email verification is: ${otp}. It expires in 10 minutes.`
         };
 
         await transporter.sendMail(mailOptions);
-        */
 
         res.json({ msg: 'OTP sent to your email' });
     } catch (err) {
