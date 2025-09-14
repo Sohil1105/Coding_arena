@@ -9,7 +9,9 @@ const { executePython } = require('./executePython');
 const cors = require('cors');
 
 // Middleware setup
-app.use(cors()); // Enable Cross-Origin Resource Sharing
+app.use(cors({
+  origin: 'https://coding-arena-six.vercel.app'
+})); // Enable Cross-Origin Resource Sharing for specific origin
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
 app.use(express.json()); // Parse JSON data
 
