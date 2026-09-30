@@ -4,6 +4,7 @@ const Submission = require('./models/submission');
 const auth = require('./middleware/auth');
 const Problem = require('./models/problem');
 const User = require('./models/user');
+const mongoose = require('mongoose');
 const axios = require('axios');
 
 // New submission with compiler service
@@ -118,80 +119,26 @@ router.post('/', auth, async (req, res) => {
             }
         }
 
+        let message;
         const user = await User.findById(req.user.id);
         if (user && allTestsPassed) {
             if (user.solvedProblems.some(p => p.equals(problem._id))) {
-                // Problem already solved, do not add score
-                // Create submission record
-                const newSubmission = new Submission({
-                    problemId: problem._id,
-                    code,
-                    language,
-                    output: overallOutput,
-                    userId: req.user.id,
-                    status: 'Accepted',
-                    testResults: testResults,
-                    submittedAt: new Date()
-                });
-
-                await newSubmission.save();
-
-                return res.json({
-                    success: true,
-                    message: 'Already Solved and submitted',
-                    output: overallOutput,
-                    testResults: testResults,
-                    submission: newSubmission
-                });
+                message = 'Already Solved and submitted';
             } else {
                 user.solvedProblems.push(problem._id);
-                let scoreToAdd = 0;
-                switch (problem.difficulty) {
-                    case 'Easy':
-                        scoreToAdd = 10;
-                        break;
-                    case 'Medium':
-                        scoreToAdd = 20;
-                        break;
-                    case 'Hard':
-                        scoreToAdd = 30;
-                        break;
-                    default:
-                        scoreToAdd = 10;
-                }
+                const scores = { Easy: 10, Medium: 20, Hard: 30 };
+                const scoreToAdd = scores[problem.difficulty] || 10;
                 user.score += scoreToAdd;
                 user.markModified('solvedProblems');
                 user.markModified('score');
                 try {
                     await user.save();
                     console.log(`User ${user._id} solved problem ${problem._id}, score increased by ${scoreToAdd} to ${user.score}`);
-
-                    // Create submission record
-                    const newSubmission = new Submission({
-                        problemId: problem._id,
-                        code,
-                        language,
-                        output: overallOutput,
-                        userId: req.user.id,
-                        status: 'Accepted',
-                        testResults: testResults,
-                        submittedAt: new Date()
-                    });
-
-                    await newSubmission.save();
-
-                    res.json({
-                        success: true,
-                        output: overallOutput,
-                        testResults: testResults,
-                        submission: newSubmission
-                    });
                 } catch (saveErr) {
                     console.error('Error saving user after solving problem:', saveErr);
-                    // Revert changes if save failed
                     user.solvedProblems.pop();
                     user.score -= scoreToAdd;
-                    res.status(500).json({
+                    return res.status(500).json({
                         success: false,
                         message: 'Failed to save progress. Please try again.',
                         output: overallOutput,
@@ -199,28 +146,32 @@ router.post('/', auth, async (req, res) => {
                     });
                 }
             }
-        } else {
-            // Create submission record for failed or no user
-            const newSubmission = new Submission({
-                problemId: problem._id,
-                code,
-                language,
-                output: overallOutput,
-                userId: req.user.id,
-                status: allTestsPassed ? 'Accepted' : 'Failed',
-                testResults: testResults,
-                submittedAt: new Date()
-            });
-
-            await newSubmission.save();
-
-            res.json({
-                success: allTestsPassed,
-                output: overallOutput,
-                testResults: testResults,
-                submission: newSubmission
-            });
         }
+
+        const newSubmission = new Submission({
+            problemId: problem._id,
+            code,
+            language,
+            output: overallOutput,
+            userId: req.user.id,
+            status: allTestsPassed ? 'Accepted' : 'Failed',
+            testResults: testResults,
+            submittedAt: new Date()
+        });
+
+        await newSubmission.save();
+
+        const responsePayload = {
+            success: allTestsPassed,
+            output: overallOutput,
+            testResults: testResults,
+            submission: newSubmission
+        };
+        if (message) {
+            responsePayload.message = message;
+        }
+
+        return res.json(responsePayload);
 
     } catch (err) {
         console.error('Submission POST error:', err);
@@ -243,15 +194,13 @@ router.post('/', auth, async (req, res) => {
 });
 
 // Get user submissions
-const mongoose = require('mongoose');
-
 router.get('/user/:userId', auth, async (req, res) => {
     try {
         let userId = req.params.userId;
         if (!mongoose.Types.ObjectId.isValid(userId)) {
             return res.status(400).json({ success: false, message: 'Invalid user ID' });
         }
-        userId = mongoose.Types.ObjectId(userId);
+        userId = new mongoose.Types.ObjectId(userId);
 
         const submissions = await Submission.find({ userId: userId })
             .populate('problemId', 'title id')

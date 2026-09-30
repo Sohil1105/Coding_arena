@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import API_BASE_URL from '../config';
+import API_BASE_URL, { COMPILER_URL } from '../config';
 import Editor from '@monaco-editor/react';
 import './ProblemDetail.css';
 
@@ -178,7 +178,7 @@ const ProblemDetail = ({ fetchUser }) => {
     setOutput('');
 
     try {
-        const response = await axios.post(`${process.env.REACT_APP_COMPILER_URL}/run`, {
+        const response = await axios.post(`${COMPILER_URL}/run`, {
             language,
             code,
             input

@@ -20,7 +20,7 @@ const Admin = () => {
             try {
                 const [problemsRes, userRes] = await Promise.all([
                     axios.get(`${API_BASE_URL}/api/problems`),
-                    axios.get(`${API_BASE_URL}/api/users`, config)
+                    axios.get(`${API_BASE_URL}/api/auth/me`, config)
                 ]);
                 setProblems(problemsRes.data);
                 setUser(userRes.data);

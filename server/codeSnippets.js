@@ -15,24 +15,12 @@ router.post('/', auth, async (req, res) => {
     problemId = new mongoose.Types.ObjectId(problemId);
 
     try {
-        let snippet = await CodeSnippet.findOne({ userId: req.user.id, problemId });
-        if (snippet) {
-            // Update existing snippet
-            snippet.code = code;
-            snippet.language = language;
-            await snippet.save();
-            res.json(snippet);
-        } else {
-            // Create new snippet
-            snippet = new CodeSnippet({
-                userId: req.user.id,
-                problemId,
-                code,
-                language
-            });
-            await snippet.save();
-            res.json(snippet);
-        }
+        const snippet = await CodeSnippet.findOneAndUpdate(
+            { userId: req.user.id, problemId },
+            { code, language },
+            { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
+        res.json(snippet);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

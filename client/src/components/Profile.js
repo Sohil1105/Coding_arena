@@ -76,10 +76,6 @@ const Profile = ({ user: loggedInUser }) => {
         navigate('/settings');
     };
 
-    const capitalizeFirstLetter = (string) => {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    };
-
     return (
         <div className="profile-container">
             <div className="profile-card">
@@ -91,7 +87,7 @@ const Profile = ({ user: loggedInUser }) => {
                     alt="Profile Avatar" 
                     className="profile-avatar" 
                 />
-                <h1 className="profile-username">{capitalizeFirstLetter(user.name)}</h1>
+                <h1 className="profile-username">{user.name}</h1>
                 <p className="profile-email">{user.email}</p>
                 <p className="profile-phone">Phone: {user.phone}</p>
 

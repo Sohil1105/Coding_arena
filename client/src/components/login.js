@@ -29,9 +29,6 @@ const Login = ({ setUser }) => {
             });
             setUser(userRes.data);
 
-            // Notify navbar
-            window.dispatchEvent(new Event('authChange'));
-
             // Success message
             toast.success('Logged in successfully');
 
@@ -83,7 +80,6 @@ const Login = ({ setUser }) => {
                     <button type="submit" className="login-btn">SIGN IN</button>
                 </form>
                 <div className="login-footer">
-                    <p><Link to="/forgot-password">Forgot Password?</Link></p>
                     <p>Don't have an account? <Link to="/register">Sign Up</Link></p>
                 </div>
             </div>

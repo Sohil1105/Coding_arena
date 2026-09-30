@@ -1,17 +1,28 @@
 const express = require('express');
+const fs = require('fs');
 const app = express();
 const { generateFile } = require('./generateFile');
 const { generateInputFile } = require('./generateInputFile');
-const { executeCpp } = require('./executeCpp');
-const { executeC } = require('./executeC');
+const { executeCpp, executeC } = require('./executeCpp');
 const { executeJava } = require('./executeJava');
 const { executePython } = require('./executePython');
 const cors = require('cors');
 
-// Middleware setup
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://coding-arena-six.vercel.app',
+  process.env.CLIENT_URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: 'https://coding-arena-six.vercel.app'
-})); // Enable Cross-Origin Resource Sharing for specific origin
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || /^http:\/\/localhost(:\d+)?$/.test(origin)) {
+      return callback(null, true);
+    }
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true
+}));
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
 app.use(express.json()); // Parse JSON data
 
@@ -33,12 +44,15 @@ app.post("/run", async (req, res) => {
         });
     }
     
+    let filePath;
+    let inputPath;
+
     try {
         // Generate a temporary file with the user's code
-        const filePath = await generateFile(language, code);
+        filePath = await generateFile(language, code);
         
         // Generate a temporary file with the user's input (if any)
-        const inputPath = await generateInputFile(input);
+        inputPath = await generateInputFile(input);
         
         let output;
         switch (language) {
@@ -90,9 +104,16 @@ app.post("/run", async (req, res) => {
 
         // Send error response with proper error message
         res.status(500).json({ 
-            success: false,
+            success: false, 
             error: fullErrorMessage
         });
+    } finally {
+        if (filePath) {
+            fs.unlink(filePath, () => {});
+        }
+        if (inputPath) {
+            fs.unlink(inputPath, () => {});
+        }
     }
 });
 

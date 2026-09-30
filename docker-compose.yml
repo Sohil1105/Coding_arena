@@ -31,7 +31,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:5000/health"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -44,13 +44,15 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    stdin_open: true
+    tty: true
     depends_on:
       - backend
-      - seeder
     env_file:
       - .env
     environment:
       - REACT_APP_API_URL=http://backend:5000
+      - REACT_APP_COMPILER_URL=http://localhost:8000
       - PORT=3000
     command: ["npm", "start"]
     networks:
@@ -72,19 +74,6 @@ services:
       - compiler-codes:/app/codes
       - compiler-outputs:/app/outputs
     restart: unless-stopped
-
-  seeder:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
-    depends_on:
-      - backend
-    env_file:
-      - .env
-    command: >
-      sh -c "npm run seed-db"
-    networks:
-      - app-network
 
 networks:
   app-network:

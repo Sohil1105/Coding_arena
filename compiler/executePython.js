@@ -1,19 +1,15 @@
 const { exec } = require("child_process");
-const fs = require("fs");
-const path = require("path");
-
-const outputPath = path.join(__dirname, "outputs");
-
-if (!fs.existsSync(outputPath)) {
-  fs.mkdirSync(outputPath, { recursive: true });
-}
 
 // Executes Python code with given input
 const executePython = (filepath, inputPath) => {
+  const pythonBin = process.env.PYTHON_PATH || 'python3';
   return new Promise((resolve, reject) => {
-const executeCommand = `"C:\\Users\\soura\\AppData\\Local\\Programs\\Python\\Python312\\python.exe" ${filepath} < ${inputPath}`;
-    exec(executeCommand, (execError, stdout, stderr) => {
+    const executeCommand = `${pythonBin} "${filepath}" < "${inputPath}"`;
+    exec(executeCommand, { timeout: 10000 }, (execError, stdout, stderr) => {
       if (execError) {
+        if (execError.killed) {
+          return reject({ error: "Time Limit Exceeded (10s)", stderr: "" });
+        }
         return reject({ error: execError.message, stderr });
       }
       if (stderr) {

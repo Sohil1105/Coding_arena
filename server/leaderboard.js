@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const User = require('./models/user');
-const Submission = require('./models/submission');
 const Problem = require('./models/problem');
 
 // Top solvers

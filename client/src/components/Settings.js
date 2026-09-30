@@ -29,7 +29,7 @@ const Settings = () => {
     const fetchUserData = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get(`${API_BASE_URL}/api/users`, {
+            const res = await axios.get(`${API_BASE_URL}/api/auth/me`, {
                 headers: { 'x-auth-token': token }
             });
             setUser(res.data);

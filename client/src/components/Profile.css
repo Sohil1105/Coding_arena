@@ -54,6 +54,7 @@
   font-weight: 700;
   margin-bottom: 0.5rem;
   color: #ffffff;
+  text-transform: capitalize;
 }
 
 .profile-email {

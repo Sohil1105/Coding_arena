@@ -15,8 +15,6 @@ import Leaderboard from './components/Leaderboard';
 import Profile from './components/Profile';
 import Submissions from './components/Submissions';
 import Landing from './components/Landing';
-import EditProblem from './components/EditProblem';
-import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
 import Settings from './components/Settings';
 import API_BASE_URL from './config';
@@ -59,13 +57,12 @@ function App() {
                     <Route path="/" element={<Landing />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/login" element={<Login setUser={setUser} />} />
-                    <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/reset-password/:token" element={<ResetPassword />} />
                     <Route path="/problems" element={<Dashboard />} />
                     <Route path="/problem/:id" element={<ProblemDetail fetchUser={fetchUser} />} />
                     <Route path="/contribute" element={<ProtectedRoute><Contribute /></ProtectedRoute>} />
                     <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
-                    <Route path="/edit-problem/:id" element={<ProtectedRoute><EditProblem /></ProtectedRoute>} />
+                    <Route path="/edit-problem/:id" element={<ProtectedRoute><Contribute /></ProtectedRoute>} />
                     <Route path="/leaderboard" element={<Leaderboard />} />
                     <Route path="/profile/:id" element={<ProtectedRoute><Profile user={user} /></ProtectedRoute>} />
                     <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />

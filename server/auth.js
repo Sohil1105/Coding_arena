@@ -34,11 +34,13 @@ router.post('/signup', async (req, res) => {
             return res.status(400).json({ msg: 'OTP expired. Please verify your email again.' });
         }
 
-        // Check user exists
-        let user = await User.findOne({ email });
-        if (user) {
-            console.log('User already exists with email:', email);
-            return res.status(400).json({ msg: 'User already exists' });
+        // Check user exists by email or phone
+        const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
+        if (existingUser) {
+            const isEmailDup = existingUser.email === email;
+            return res.status(400).json({
+                msg: isEmailDup ? 'User already exists with this email' : 'Phone number is already registered'
+            });
         }
 
         // New user
@@ -81,6 +83,10 @@ router.post('/signup', async (req, res) => {
         );
     } catch (err) {
         console.error('Signup error:', err);
+        if (err.code === 11000) {
+            const field = err.keyPattern?.phone ? 'Phone number' : 'Email';
+            return res.status(400).json({ msg: `${field} is already registered.` });
+        }
         res.status(500).json({ error: 'Server error', message: err.message });
     }
 });

@@ -10,57 +10,53 @@ if (!fs.existsSync(outputPath)) {
 
 // Compiles and executes Java code with given input
 const executeJava = (filepath, inputPath) => {
-  // Read the file to extract the class name
-  const fileContent = fs.readFileSync(filepath, 'utf8');
-  const classMatch = fileContent.match(/public class (\w+)/);
-  if (!classMatch) {
-    return reject({ error: 'No public class found in the Java file' });
-  }
-  const className = classMatch[1];
-
-  // Rename the file to match the class name
-  const newFilePath = path.join(path.dirname(filepath), `${className}.java`);
-  fs.renameSync(filepath, newFilePath);
-
-  const jobId = className;
-
   return new Promise((resolve, reject) => {
-    const compileCommand = `javac ${newFilePath} -d ${outputPath}`;
-    exec(compileCommand, (compileError, compileStdout, compileStderr) => {
-      if (compileError) {
-        // Compilation failed
-        return reject({ error: compileError.message, stderr: compileStderr });
+    try {
+      const fileContent = fs.readFileSync(filepath, 'utf8');
+      const classMatch = fileContent.match(/public\s+class\s+(\w+)/) || fileContent.match(/class\s+(\w+)/);
+      if (!classMatch) {
+        return reject({ error: 'No class declaration found in the Java code' });
       }
-      if (compileStderr) {
-        // Compilation warnings or non-fatal errors
-        // We can still proceed to execution, but might want to log this
-        console.warn(`Java compilation warnings/errors for ${jobId}:`, compileStderr);
+      const className = classMatch[1];
+      const jobDir = path.join(path.dirname(filepath), path.basename(filepath).split('.')[0]);
+      if (!fs.existsSync(jobDir)) {
+        fs.mkdirSync(jobDir, { recursive: true });
       }
+      const javaFile = path.join(jobDir, `${className}.java`);
+      fs.writeFileSync(javaFile, fileContent);
 
-      // Check if input file has content
-      if (fs.statSync(inputPath).size === 0) {
-        return reject({ error: 'Input required but not provided', stderr: 'Please provide input for the Java program.' });
-      }
+      const compileCommand = `javac "${javaFile}" -d "${outputPath}"`;
+      exec(compileCommand, (compileError, compileStdout, compileStderr) => {
+        if (compileError) {
+          fs.rm(jobDir, { recursive: true, force: true }, () => {});
+          return reject({ error: compileError.message, stderr: compileStderr });
+        }
+        if (compileStderr) {
+          console.warn(`Java compilation warnings for ${className}:`, compileStderr);
+        }
 
-      const executeCommand = `java -cp ${outputPath} ${jobId} < ${inputPath}`;
-      exec(executeCommand, (execError, stdout, stderr) => {
-        // Clean up compiled .class files after execution
-        const classFilePath = path.join(outputPath, `${jobId}.class`);
-        fs.unlink(classFilePath, (err) => {
-          if (err) console.error(`Failed to delete ${classFilePath}:`, err);
+        const executeCommand = `java -cp "${outputPath}" ${className} < "${inputPath}"`;
+        exec(executeCommand, { timeout: 10000 }, (execError, stdout, stderr) => {
+          // Clean up compiled class and temporary directory
+          fs.rm(jobDir, { recursive: true, force: true }, () => {});
+          const classFilePath = path.join(outputPath, `${className}.class`);
+          fs.unlink(classFilePath, () => {});
+
+          if (execError) {
+            if (execError.killed) {
+              return reject({ error: "Time Limit Exceeded (10s)", stderr: "" });
+            }
+            return reject({ error: execError.message, stderr });
+          }
+          if (stderr) {
+            return reject({ error: "Runtime Error", stderr });
+          }
+          resolve(stdout);
         });
-
-        if (execError) {
-          // Execution failed
-          return reject({ error: execError.message, stderr });
-        }
-        if (stderr) {
-          // Runtime errors or messages to stderr
-          return reject({ error: "Runtime Error", stderr });
-        }
-        resolve(stdout);
       });
-    });
+    } catch (err) {
+      reject({ error: err.message });
+    }
   });
 };
 
